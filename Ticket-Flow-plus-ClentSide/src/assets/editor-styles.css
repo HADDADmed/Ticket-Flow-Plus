@@ -1,0 +1,56 @@
+/* Change the background color of the editor content */
+.ProseMirror {
+     background-color: #f0f0f0;
+     padding-left: 15px;
+     padding-right: 10px;
+     padding-top: 5px;
+     padding-bottom: 1px;
+
+     height: 300px;
+     overflow-y: auto;
+}
+
+/* create classes to style the statuses OPEN CLOSED AND PENDING */
+
+/* OPEN */
+.open {
+    background-color: green; /* Green with transparency */
+    color: white;
+}
+
+/* CLOSED */
+.closed {
+    background-color: red; /* Red with transparency */
+    color: white;
+}
+
+/* PENDING */
+.pending {
+    background-color: gold; /* Orange with transparency */
+  color: black;
+}
+
+/* status */
+
+.status {
+     font-weight: bold;
+     margin-top: 0px;
+     display: inline-block;
+     padding: 4px 8px;
+     border-radius: 20px;
+     opacity: 0.8; /* Adjust the opacity value */
+     transition: opacity 0.2s; /* Add a smooth transition effect */
+}
+/* sattus hover */
+.status:hover {
+     opacity: 1;
+     transform: scale(1.25); /* Slightly bigger on hover */
+     opacity: 1; /* Adjust the opacity value */
+}
+
+/* standar class to hover  */
+.hover:hover {
+     opacity: 1;
+     transform: scale(1.25); /* Slightly bigger on hover */
+     opacity: 1; /* Adjust the opacity value */
+}
