@@ -13,6 +13,7 @@ const toaster = createToaster({});
 const route = useRoute();
 var currentDate = ref(GlobalService.getCurrentDate());
 var currentTime = ref(GlobalService.getCurrentTimeWithoutSeconds());
+
 const ticket_id = route.query.ticket_id; // 'ticket_id'
 const newTicketStatus = ref({
      ticket_id: ticket_id,
@@ -25,10 +26,9 @@ var currentStatus = ref("");
 
 const getTicketStatuses = async () => {
      try {
-          const response = await TicketStatusService.getAllTicketStatusesByTicketId(ticket_id);         
+      const response = await TicketStatusService.getAllTicketStatusesByTicketId(ticket_id);         
       ticketStatuses.value = response.data;
       currentStatus = ticketStatuses.value[0].status_name;
-      console.log('dfdsf'+currentStatus);
      } catch (error) {
           console.error("Error fetching tickets:", error);
      }
