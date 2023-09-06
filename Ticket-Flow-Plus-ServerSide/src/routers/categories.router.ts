@@ -47,7 +47,8 @@ router.get('/names', (req:any, res:any) => {
 });
 
 router.post('/',(req:any, res:any) => {
-    const name = req.body.name;
+    if(req.user.role == "ADMIN"){
+        const name = req.body.name;
     const description = req.body.description;
     const selectQuery = 'INSERT INTO category (name, description) VALUES (?, ?)';
     
@@ -61,7 +62,9 @@ router.post('/',(req:any, res:any) => {
         }
     }
     );
-    
+    }else{
+        res.status(401).json({ error: "Unauthorized" });
+    }
 });
 
 

@@ -9,7 +9,6 @@ const API_URL = 'http://localhost:8000/api/tickets/';
 class TicketsService {
     // get all tickets
     getAllTickets(user_id_tickets=null) {
-        console.log('from services :'+user_id_tickets);
         return axios.get(API_URL+'?user_id_tickets='+user_id_tickets);    
     }
     

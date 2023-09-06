@@ -31,6 +31,12 @@ This is a web application designed to manage and track Tickets  the applictaion 
 4. Run `npm start` to start the backend server using (nodemone).
 
 
+## RUN 
+
+1. Navigate to the `TICKET-FLOW-PLUS` root Folder .
+2. Run `npm install` to install dependencies.
+3. Set up your MySQL database and update `.env` with the database details.
+4. Run `npm run dev` to run both frontend and backend servers concurrently.
 
 ## Contributing
 

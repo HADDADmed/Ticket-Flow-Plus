@@ -134,7 +134,7 @@ router.get("/", (req: any, res: any) => {
      }
 });
 
-// Get all ticket with all comments and all ticketStatus
+// Get  ticket with all comments 
 router.get("/ticket/:ticketid", (req: any, res: any) => {
      console.log(
           "Get the ticket name by ticket id and all comments by ticket id and all ticketStatus by ticket id"
@@ -177,11 +177,7 @@ router.get("/ticket/:ticketid", (req: any, res: any) => {
 // CREATE A NEW TICKET AND CREAT NEW STATUS FOR IT
 
 router.post("/", (req: any, res: any) => {
-     if (
-          req.user.role == "ADMIN" ||
-          req.user.role == "RESPONSIBLE" ||
-          req.user.role == "USER"
-     ) {
+     
           const title = req.body.title;
           const description = req.body.content;
           const category_id = req.body.category_id;
@@ -224,11 +220,7 @@ router.post("/", (req: any, res: any) => {
                     );
                }
           );
-     } else {
-          res.status(401).json({ error: "Unauthorized" });  
-
-     // end
-     }
+     
 });
 
 

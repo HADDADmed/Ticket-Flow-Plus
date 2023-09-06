@@ -4,7 +4,6 @@ import e from "express";
 const express = require("express");
 const router = express.Router();
 const connection = require("../DataBaseManager/dbConnection"); // Adjust the path as needed
-const verifyToken = require("../middleware/authJWT");
 
 // Get all statuses
 

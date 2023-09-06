@@ -16,16 +16,28 @@ import UsersService from "@/services/users.service.js";
 
 import { createToaster } from "@meforma/vue-toaster";
 
-
-
 const toaster = createToaster({});
 const tickets = ref([]);
 const orderSearch = ref(false);
-const user_id_tickets = route.query.user_id_tickets? route.query.user_id_tickets : null;
+const user_id_tickets = route.query.user_id_tickets
+     ? route.query.user_id_tickets
+     : null;  
+const filter_terme = route.query.filter_terme ? route.query.filter_terme : "";
 const getTickets = async () => {
      try {
           const response = await TicketsService.getAllTickets(user_id_tickets); // Use getAllUsers method
           tickets.value = response.data;
+          tickets_count.value = {
+               total: response.data.length,
+               pending: response.data.filter(
+                    (ticket) => ticket.status == "PENDING"
+               ).length,
+               open: response.data.filter((ticket) => ticket.status == "OPEN")
+                    .length,
+               closed: response.data.filter(
+                    (ticket) => ticket.status == "CLOSED"
+               ).length,
+          };
      } catch (error) {
           console.error("Error fetching tickets:", error);
      }
@@ -35,46 +47,6 @@ const getTickets = async () => {
 onMounted(() => {
      getTickets();
 });
-
-/// tableTrs is a reactive jason array that contains the table headers
-const tableTrs = ref([
-     {
-          name: "(ticket,user)_id",
-          class: "",
-     },
-     {
-          name: "FirstName",
-          class: "d-none d-sm-table-cell",
-     },
-     {
-          name: "title",
-          class: "",
-     },
-     {
-          name: "Content",
-          class: "d-none d-md-table-cell",
-     },
-     {
-          name: "category name",
-          class: "d-none d-md-table-cell",
-     },
-     {
-          name: "status",
-          class: "d-none d-sm-table-cell text-center",
-     },
-     {
-          name: "comments",
-          class: "d-none d-sm-table-cell",
-     },
-     {
-          name: "created_at",
-          class: "d-none d-sm-table-cell",
-     },
-     {
-          name: "actions",
-          class: "d-none d-sm-table-cell",
-     },
-]);
 
 function deleteTicket() {}
 
@@ -94,6 +66,30 @@ import BaseHeader from "@/layouts/partials/BaseHeader.vue";
 const routesfirst2 = ref(["Home", "Tickets"]);
 const routeslast = ref(["tickets - List"]);
 const user = JSON.parse(localStorage.getItem("user"));
+
+const tickets_count = ref({
+     total: 0,
+     pending: 0,
+     open: 0,
+     closed: 0,
+});
+
+///////// filters
+const filters = ref({
+     name: {
+          value: filter_terme,
+          keys: [
+               "user_fullName",
+               "title",
+               "description",
+               "category_name",
+               "status",
+          ],
+     },
+});
+
+const currentPage = ref(1);
+const totalPages = ref(0);
 </script>
 
 <template>
@@ -139,7 +135,7 @@ const user = JSON.parse(localStorage.getItem("user"));
                v-else
                title="Tickets List"
                class="animated zoomIn"
-               style="width: 100%; sa"
+               style="width: 100%;"
           >
                <template #options>
                     <div class="space-x-1">
@@ -172,43 +168,47 @@ const user = JSON.parse(localStorage.getItem("user"));
                                    aria-labelledby="dropdown-recent-orders-filters"
                               >
                                    <a
+                                        @click="filters.name.value = 'OPEN'"
                                         class="dropdown-item fw-medium d-flex align-items-center justify-content-between"
                                         href="javascript:void(0)"
                                    >
-                                        Pending
+                                        OPEN
                                         <span
                                              class="badge bg-primary rounded-pill"
-                                             >{20}</span
+                                             >{{ tickets_count.open }}</span
                                         >
                                    </a>
                                    <a
+                                        @click="filters.name.value = 'PENDING'"
                                         class="dropdown-item fw-medium d-flex align-items-center justify-content-between"
                                         href="javascript:void(0)"
                                    >
-                                        Active
+                                        PENDING
                                         <span
                                              class="badge bg-primary rounded-pill"
-                                             >72</span
+                                             >{{ tickets_count.pending }}</span
                                         >
                                    </a>
                                    <a
+                                        @click="filters.name.value = 'CLOSED'"
                                         class="dropdown-item fw-medium d-flex align-items-center justify-content-between"
                                         href="javascript:void(0)"
                                    >
-                                        Completed
+                                        CLOSED
                                         <span
                                              class="badge bg-primary rounded-pill"
-                                             >890</span
+                                             >{{ tickets_count.closed }}</span
                                         >
                                    </a>
                                    <a
+                                        @click="filters.name.value = ''"
                                         class="dropdown-item fw-medium d-flex align-items-center justify-content-between"
                                         href="javascript:void(0)"
                                    >
                                         All
                                         <span
                                              class="badge bg-primary rounded-pill"
-                                             >997</span
+                                             >{{ tickets_count.total }}</span
                                         >
                                    </a>
                               </div>
@@ -232,6 +232,7 @@ const user = JSON.parse(localStorage.getItem("user"));
                                              id="one-ecom-orders-search"
                                              name="one-ecom-orders-search"
                                              placeholder="Search all orders.."
+                                             v-model="filters.name.value"
                                         />
                                         <span
                                              class="input-group-text bg-body border-0"
@@ -246,20 +247,65 @@ const user = JSON.parse(localStorage.getItem("user"));
                     <div class="block-content block-content-full">
                          <!-- Recent Orders Table -->
                          <div class="table-responsive">
-                              <table class="table table-hover table-vcenter">
-                                   <thead>
+                              <v-table
+                                   class="table table-hover table-vcenter"
+                                   :data="tickets"
+                                   :filters="filters"
+                                   sortHeaderClass="flex items-center justify-between w-full"
+                                   :page-size="10"
+                                   v-model:currentPage="currentPage"
+                                   @totalPagesChanged="totalPages = $event"
+                              >
+                                   <template #head>
                                         <tr>
-                                             <th
-                                                  v-for="tableTr in tableTrs"
-                                                  :class="tableTr.class"
-                                                  style="font-size: 12px"
+                                             <th>(ticket,user)_id</th>
+                                             <VTh
+                                                  style="cursor: pointer"
+                                                  sortKey="user_fullName"
+                                                  >Name</VTh
                                              >
-                                                  {{ tableTr.name }}
+                                             <th>Title</th>
+                                             <th class="d-none d-sm-table-cell">
+                                                  Content
                                              </th>
+                                             <VTh
+                                                  style="cursor: pointer"
+                                                  sortKey="category_name"
+                                                  class="d-none d-sm-table-cell"
+                                                  >Category</VTh
+                                             >
+                                             <VTh
+                                                  style="cursor: pointer"
+                                                  sortKey="status"
+                                             >
+                                                  <a
+                                                       @click="
+                                                            filters.name.value =
+                                                                 ''
+                                                       "
+                                                       >Status</a
+                                                  >
+                                             </VTh>
+                                             <VTh
+                                                  style="cursor: pointer"
+                                                  sortKey="comment_count"
+                                                  class="d-none d-sm-table-cell"
+                                                  >Comments</VTh
+                                             >
+                                             <VTh
+                                                  style="cursor: pointer"
+                                                  sortKey="createdAt"
+                                                  class="d-none d-sm-table-cell"
+                                                  >created_at</VTh
+                                             >
+                                             <th>Actions</th>
                                         </tr>
-                                   </thead>
-                                   <tbody class="fs-sm">
-                                        <tr v-for="ticket in tickets">
+                                   </template>
+                                   <template #body="{ rows }">
+                                        <tr
+                                             v-for="ticket in rows"
+                                             :key="ticket.id"
+                                        >
                                              <td>
                                                   <a
                                                        style="margin-left: 25px"
@@ -386,8 +432,15 @@ const user = JSON.parse(localStorage.getItem("user"));
                                                   </button>
                                              </td>
                                         </tr>
-                                   </tbody>
-                              </table>
+                                   </template>
+                              </v-table>
+                              <VTPagination
+                              class="d-flex justify-content-center"
+                                   v-model:currentPage="currentPage"
+                                   :total-pages="totalPages"
+                                   :boundary-links="true"
+                                   :maxPageLinks="3"
+                              />
                          </div>
                          <!-- END Recent Orders Table -->
                     </div>

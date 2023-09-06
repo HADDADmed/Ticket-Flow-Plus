@@ -34,6 +34,7 @@ connection.connect(function (err: any) {
      console.log("Connected successfuly to MySql !");
 });
 
+
 const verifyToken = require('./middleware/authJWT');
 
 app.use("/api/tickets",verifyToken,ticketsRouter);

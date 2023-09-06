@@ -36,67 +36,40 @@ router.get("/", (req: any, res: any) => {
 
                     res.status(200).json(results);  
                     });
-    }else{
+     }    else if(req.user.role === "RESPONSIBLE"){
+                    // slecting all users with their tickets count that have role = USER
+                    const selectQuery = `
+                    SELECT u.id,u.fullName ,u.email,u.role,u.phoneNumber,u.birthDate,u.hiringDate,COUNT(ticket.id) AS tickets_count
+                    FROM user u
+                    LEFT JOIN ticket
+                    ON u.id = ticket.user_id
+                    WHERE u.role = "USER"
+                    GROUP BY u.id;`;
+
+                    connection.query(selectQuery, (err: any, results: any) => {
+                    if (err) {
+
+                               console.error("Error executing query:", err);
+                                   res.status(500).json({ error: "Internal server error" });   
+                                   return;
+                    }
+
+                    res.status(200).json(results);
+                    });
+     }
+    else{
         res.status(401).json({ message: "Unauthorized" });
     }
 });
 
 
 
-
-
-
-router.post("/login", (req: any, res: any) => {
-     const { email, password } = req.body;
-     const selectQuery = "SELECT * FROM user WHERE email = ? AND password = ?";
-     connection.query(
-          selectQuery,
-          [email, password],
-          (err: any, results: any) => {
-               if (err) {
-                    console.error("Error executing query:", err);
-                    res.status(500).json({ error: "Internal server error" });
-                    return;
-               }
-               if (results.length === 1) {
-                    const userD = results[0];
-                    const token = jwt.sign({ id: userD.id },  
-                        JWT_SECRET_KEY , {
-                         expiresIn: "24h",
-                    });
-                    res.status(200).json({
-                         message: "login success",
-                         user: {
-                              fullName: userD.fullName,
-                              role: userD.role,
-                         },
-                         accessToken: token
-                    });
-
-               } else {
-                    res.status(401).json({
-                         error: "Invalid email or password",
-                    });
-               }
-          }
-     );
-});
-
 //get users by role
-router.get("/role/:role", (req: any, res: any) => {
-     console.log("Get users by role");
-     const { role } = req.params;
-     const selectQuery = "SELECT * FROM user WHERE role = ?";
-
-     connection.query(selectQuery, [role], (err: any, results: any) => {
-          if (err) {
-               console.error("Error executing query:", err);
-               res.status(500).json({ error: "Internal server error" });
-               return;
-          }
-          console.log({ message: "Get users by role  success :", results });
-          res.status(200).json(results);
-     });
+router.put("/role/:id", (req: any, res: any) => {
+     const { id } = req.params;
+     // change the role of the user
+     const newRole = req.body;
+     
 });
 
 // Get user by id
@@ -129,25 +102,6 @@ router.put("/change-user-role", (req: any, res: any) => {
      });
 });
 
-//count number of tickets of a user
-router.get("/count/:userId", (req: any, res: any) => {
-     console.log("count number of tickets of a user ");
-     const { userId } = req.params;
-     const selectQuery = "SELECT COUNT(*) FROM ticket WHERE user_id = ?";
-
-     connection.query(selectQuery, [userId], (err: any, results: any) => {
-          if (err) {
-               console.error("Error executing query:", err);
-               res.status(500).json({ error: "Internal server error" });
-               return;
-          }
-          console.log({
-               message: "count number of tickets of a user  success :",
-               results,
-          });
-          res.status(200).json(results);
-     });
-});
 
 //creat a new user
 router.post("/register", (req: any, res: any) => {

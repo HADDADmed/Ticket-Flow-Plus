@@ -2,6 +2,7 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import NProgress from "nprogress/nprogress.js";
 
 
+
 function guardMyroute(to, from, next) {
     if(to.name !== 'ticketflowplus-login' && !localStorage.getItem('accessToken')){
         next({ name: 'ticketflowplus-login' })
@@ -10,50 +11,50 @@ function guardMyroute(to, from, next) {
         localStorage.removeItem('user')
         next({ name: 'ticketflowplus-login' })
     }else{
-        next()
-    }
-    
+        next() 
+    } 
 }
 
 function lazyLoad(Folder,view){
   if(Folder === 'null') return() => import(`@/views/TicketsFlowPlusViews/${view}.vue`)
   else return() => import(`@/views/TicketsFlowPlusViews/${Folder}/${view}.vue`)
 }
+
 function lazyLoadLayout(view){
  return() => import(`@/layouts/variations/${view}.vue`)
 }
+
+
 // Set all routes
 const routes = [
-
   {
+    path: '/401',
+    name: '401',
+    component: lazyLoad('ErorsPages','401View'),
+  },{
     path: "/",
-    component: lazyLoadLayout('TicketsFlowPlus'),
-    children: [
-      {
-        path: "",
-        name: "landing",
-        component: lazyLoad('null','DashboardView'),
-      },
-    ],
-  },
+    name: "landing",
+    component: lazyLoad('null','DashboardView'),
+  
+    },
   {
-    path: "/ticketflowplus",
-    component: lazyLoadLayout('Simple'),
-    children: [
-      {
-        path: "login",
-        name: "ticketflowplus-login",
-        component: lazyLoad('Auth','LoginPage'),
-  }]
-},
+    path: "/login",
+    name: "ticketflowplus-login",
+    component: lazyLoad('Auth','LoginPage'),
+  },
 {
   path: "/ticketflowplus",
   redirect: "/ticketflowplus/ticketflowplus-dashboard",
   component: lazyLoadLayout('TicketsFlowPlus'),
   children: [
     {
-      path: "ticketflowplus-users",
-      name: 'ticketflowplus-users',
+      path: "ticketflowplus-dashboard",
+      name: "ticketflowplus-dashboard",
+      component: lazyLoad('null','DashboardView'),
+    },
+    {
+      path: "ticketflowplus-users-list",
+      name: 'ticketflowplus-users-list',
       component: lazyLoad('ListsOfElements','UsersList')
     }, 
     {
@@ -62,15 +63,10 @@ const routes = [
       component: lazyLoad('ListsOfElements','TicketList')
     },
     {
-      path: "/ticketflowplus-categories-list",
+      path: "ticketflowplus-categories-list",
       name: 'ticketflowplus-categories-list',
       component: lazyLoad('ListsOfElements','CategoriesList')
   
-    },
-    {
-      path: "ticketflowplus-dashboard",
-      name: "ticketflowplus-dashboard",
-      component: lazyLoad('null','DashboardView'),
     },{
       path: "ticketflowplus-ticket-add",
       name: "ticketflowplus-ticket-add",
@@ -106,7 +102,6 @@ const router = createRouter({
 
 
 // set guardMyroute to all routes
-// router.beforeEach(verifyToken)
 router.beforeEach(guardMyroute)
 
 // NProgress

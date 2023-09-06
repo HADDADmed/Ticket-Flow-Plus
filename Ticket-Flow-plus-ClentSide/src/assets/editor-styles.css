@@ -54,3 +54,19 @@
      transform: scale(1.25); /* Slightly bigger on hover */
      opacity: 1; /* Adjust the opacity value */
 }
+
+
+.admin {
+     background-color: red; /* Red with transparency */
+    color: white;
+}
+
+.user {
+     background-color: green; /* Red with transparency */
+    color: white;
+}
+
+.responsible {
+     background-color: orange; /* Red with transparency */
+    color: white;
+}

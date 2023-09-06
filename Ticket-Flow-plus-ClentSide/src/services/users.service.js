@@ -63,9 +63,9 @@ class UsersService {
     getUserRoleClass(role) {
 
         if (role === "ADMIN") {
-            return "badge bg-danger";
+            return "badge bg-danger ";
         } else if (role === "USER") {
-            return "badge bg-success";
+            return "badge bg-success ";
       } else if (role === "RESPONSIBLE") {
             return "badge bg-warning";
         } // default
