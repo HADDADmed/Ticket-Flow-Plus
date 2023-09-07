@@ -17,9 +17,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const cors = require("cors"); // Import the cors package
 const port = process.env.SERVER_PORT || 8000;
 
-// Add Access Control Allow Origin headers
-const allowedOrigins = ['http://localhost:8000', 'http://localhost:5173'];
 
+// Add Access Control Allow Origin headers
+const allowedOrigins = ['http://localhost:8000/','http://192.168.1.107:5173', 'http://localhost:5173'];
 app.use(cors({
   origin: function (origin:any, callback:any) {
     if (!origin || allowedOrigins.includes(origin)) {
@@ -29,6 +29,7 @@ app.use(cors({
     }
   }
 }));
+
 connection.connect(function (err: any) {
      if (err) throw err;
      console.log("Connected successfuly to MySql !");

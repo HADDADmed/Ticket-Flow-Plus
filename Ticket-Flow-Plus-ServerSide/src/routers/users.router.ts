@@ -114,16 +114,61 @@ router.post("/register", (req: any, res: any) => {
           birthDate: req.body.birthDate,
           hiringDate: req.body.hiringDate,
      };
-     const selectQuery = "INSERT INTO user SET ?";
-     connection.query(selectQuery, newUser, (err: any, results: any) => {
-          if (err) {
-               console.error("Error executing query:", err);
-               res.status(500).json({ error: "Internal server error" });
-               return;
+
+   // create a query to insert a new user but first we have to check if the email is already used in the same query
+   const checkEmailQuery = "SELECT * FROM user WHERE email = ?";
+     const insertQuery =
+          "INSERT INTO user (fullName,email,password,role,phoneNumber,birthDate,hiringDate) VALUES (?,?,?,?,?,?,?)";
+     connection.query(
+          checkEmailQuery,
+          [newUser.email],
+          (err: any, results: any) => {
+
+               if (err) {
+                    console.error("Error executing query:", err);
+                    res.status(500).json({ error: "Internal server error" });
+                    return;
+               }
+               if (results.length === 1) {
+                    res.status(409).json({
+                         error: "Email already used",
+                    });
+               } else {
+                    connection.query(
+                         insertQuery,
+                         [
+                              newUser.fullName,
+                              newUser.email,
+                              newUser.password,
+                              newUser.role,
+                              newUser.phoneNumber,
+                              newUser.birthDate,
+                              newUser.hiringDate,
+                         ],
+                         (err: any, results: any) => {
+                              if (err) {
+                                   console.error(
+                                        "Error executing query:",
+                                        err
+                                   );
+                                   res.status(500).json({
+                                        error: "Internal server error",
+                                   });
+                                   return;
+                              }
+                              console.log({
+                                   message: "User created successfully",
+                                   results,
+                              });
+                              res.status(200).json({
+                                   message: "User created successfully",
+                                   results,
+                              });
+                         }
+                    );
+               }
           }
-          console.log({ message: "creat a new user success :", results });
-          res.status(200).json(results);
-     });
+     );
 });
 
 /// delete user by id but first we have to delete all the tickets of this user

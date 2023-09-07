@@ -33,8 +33,6 @@ router.get("/", (req: any, res: any) => {
         where = " where user_id = "+req.user.id;
     }
 
-
-
     selectQuery += `
                 (SELECT
                     COUNT(*) AS open

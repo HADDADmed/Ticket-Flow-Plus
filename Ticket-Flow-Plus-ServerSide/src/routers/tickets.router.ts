@@ -215,6 +215,7 @@ router.post("/", (req: any, res: any) => {
                               res.status(200).json({
                                    ticketInserted: ticketInsertResult,
                                    ticketStatusInserted: results,
+                                   id: ticketId,
                               });
                          }
                     );
