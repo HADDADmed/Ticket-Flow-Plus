@@ -31,12 +31,7 @@ const routes = [
     path: '/401',
     name: '401',
     component: lazyLoad('ErorsPages','401View'),
-  },{
-    path: "/",
-    name: "landing",
-    component: lazyLoad('null','DashboardView'),
-  
-    },
+  },
   {
     path: "/login",
     name: "ticketflowplus-login",
@@ -47,6 +42,12 @@ const routes = [
   redirect: "/ticketflowplus/ticketflowplus-dashboard",
   component: lazyLoadLayout('TicketsFlowPlus'),
   children: [
+    {
+    path: "/",
+    name: "landing",
+    component: lazyLoad('null','DashboardView'),
+  
+    },
     {
       path: "ticketflowplus-dashboard",
       name: "ticketflowplus-dashboard",
@@ -75,6 +76,10 @@ const routes = [
       path: "ticketflowplus-category-add",
       name: "ticketflowplus-category-add",
       component: lazyLoad('AddNewElement','addCategory'),
+    },{
+      path: "ticketflowplus-user-add",
+      name: "ticketflowplus-user-add",
+      component: lazyLoad('AddNewElement','addUser'),
     },{
       path: "ticketflowplus-ticket-oneticketpage",
       name: "ticketflowplus-ticket-oneticketpage",

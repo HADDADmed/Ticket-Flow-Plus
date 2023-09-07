@@ -9,7 +9,8 @@ const orderSearch = ref(false);
 // import global service
 import GlobalService from "@/services/global.servise.js";
 const user = JSON.parse(localStorage.getItem("user"));
-
+import { useRouter } from "vue-router";
+const router = useRouter();
 import CategoriesService from "@/services/category.service.js";
 
 const categories = ref([]);
@@ -33,7 +34,7 @@ const toaster = createToaster({});
 const tableTrs = ref([
      {
           name: "Category_ID",
-          class: "",
+          class: "d-none d-xl-table-cell",
           forAdmin: false,
      },
      {
@@ -43,7 +44,7 @@ const tableTrs = ref([
      },
      {
           name: "Description",
-          class: "",
+          class: "d-none d-sm-table-cell",
           forAdmin: false,
      },
      {
@@ -53,7 +54,7 @@ const tableTrs = ref([
      },
      {
           name: "Created_At",
-          class: "text-center",
+          class: "d-none d-xl-table-cell text-center",
           forAdmin: true,
      },
      {
@@ -93,6 +94,25 @@ function deleteCat(category_id) {
 import BaseHeader from "@/layouts/partials/BaseHeader.vue";
 const routesfirst2 = ref(["Home", "Categories"]);
 const routeslast = ref(["categories - List"]);
+
+
+///////// filters
+const filters = ref({
+     name: {
+          value: '',
+          keys: [
+               "id",
+               "name",
+               "description",
+               "createdAt",
+          ],
+     },
+});
+
+const currentPage = ref(1);
+const totalPages = ref(0);
+
+
 </script>
 
 <template>
@@ -130,7 +150,7 @@ const routeslast = ref(["categories - List"]);
           </div>
 
           <!-- Recent Orders -->
-          <BaseBlock v-else title="Categories List" class="animated zoomIn">
+          <BaseBlock v-else :title="`${categories.length} Category in Total` " class="animated zoomIn">
                <template #options>
                     <div class="space-x-1">
                          <button
@@ -144,65 +164,6 @@ const routeslast = ref(["categories - List"]);
                          >
                               <i class="fa fa-search"></i>
                          </button>
-                         <div class="dropdown d-inline-block">
-                              <button
-                                   type="button"
-                                   class="btn btn-sm btn-alt-secondary"
-                                   id="dropdown-recent-orders-filters"
-                                   data-bs-toggle="dropdown"
-                                   aria-haspopup="true"
-                                   aria-expanded="false"
-                              >
-                                   <i class="fa fa-fw fa-flask"></i>
-                                   Filters
-                                   <i class="fa fa-angle-down ms-1"></i>
-                              </button>
-                              <div
-                                   class="dropdown-menu dropdown-menu-md dropdown-menu-end fs-sm"
-                                   aria-labelledby="dropdown-recent-orders-filters"
-                              >
-                                   <a
-                                        class="dropdown-item fw-medium d-flex align-items-center justify-content-between"
-                                        href="javascript:void(0)"
-                                   >
-                                        Pending
-                                        <span
-                                             class="badge bg-primary rounded-pill"
-                                             >20</span
-                                        >
-                                   </a>
-                                   <a
-                                        class="dropdown-item fw-medium d-flex align-items-center justify-content-between"
-                                        href="javascript:void(0)"
-                                   >
-                                        Active
-                                        <span
-                                             class="badge bg-primary rounded-pill"
-                                             >72</span
-                                        >
-                                   </a>
-                                   <a
-                                        class="dropdown-item fw-medium d-flex align-items-center justify-content-between"
-                                        href="javascript:void(0)"
-                                   >
-                                        Completed
-                                        <span
-                                             class="badge bg-primary rounded-pill"
-                                             >890</span
-                                        >
-                                   </a>
-                                   <a
-                                        class="dropdown-item fw-medium d-flex align-items-center justify-content-between"
-                                        href="javascript:void(0)"
-                                   >
-                                        All
-                                        <span
-                                             class="badge bg-primary rounded-pill"
-                                             >997</span
-                                        >
-                                   </a>
-                              </div>
-                         </div>
                     </div>
                </template>
 
@@ -221,7 +182,8 @@ const routeslast = ref(["categories - List"]);
                                              class="form-control form-control-alt"
                                              id="one-ecom-orders-search"
                                              name="one-ecom-orders-search"
-                                             placeholder="Search all orders.."
+                                             placeholder="Search Category.."
+                                             v-model="filters.name.value"
                                         />
                                         <span
                                              class="input-group-text bg-body border-0"
@@ -236,8 +198,18 @@ const routeslast = ref(["categories - List"]);
                     <div class="block-content block-content-full">
                          <!-- Recent Orders Table -->
                          <div class="table-responsive">
-                              <table class="table table-hover table-vcenter">
-                                   <thead>
+
+                              
+                              <v-table
+                                   class="table table-hover table-vcenter"
+                                   :data="categories"
+                                   :filters="filters"
+                                   sortHeaderClass="flex items-center justify-between w-full"
+                                   :page-size="10"
+                                   v-model:currentPage="currentPage"
+                                   @totalPagesChanged="totalPages = $event"
+                              >
+                              <template #head>
                                         <tr>
                                              <th
                                                   v-for="tableTr in tableTrs"
@@ -263,10 +235,12 @@ const routeslast = ref(["categories - List"]);
                   <th  class="d-none d-sm-table-cell text-center">Actions</th>
            
                 </tr> -->
-                                   </thead>
-                                   <tbody class="fs-sm">
-                                        <tr v-for="category in categories">
-                                             <td>
+                                   </template>
+
+                                  <template #body="{ rows }">
+                                        <tr v-for="category in rows"
+                                             :key="category.id" >
+                                             <td class="d-none d-xl-table-cell">
                                                   <a
                                                        class="fw-semibold"
                                                        href="javascript:void(0)"
@@ -274,7 +248,7 @@ const routeslast = ref(["categories - List"]);
                                                        #{{ category.id }}
                                                   </a>
                                              </td>
-                                             <td class="d-none d-xl-table-cell">
+                                             <td >
                                                   <a
                                                        class="fw-semibold"
                                                        href="javascript:void(0)"
@@ -294,21 +268,21 @@ const routeslast = ref(["categories - List"]);
                                              </td>
                                              <td
                                                   v-if="GlobalService.isAdmin()"
-                                                  class="d-none d-sm-table-cell text-center"
+                                                  class=" text-center"
                                              >
                                                   <a href="javascript:void(0)">
-                                                       <p
+                                                       <a  @click="router.push({name:'ticketflowplus-tickets-list',query:{ filter_terme: category.name}})"
                                                             class="fs-xs fw-semibold mb-0"
                                                        >
                                                             {{
                                                                  category.tickets_Count
                                                             }}
-                                                       </p>
+                                                       </a>
                                                   </a>
                                              </td>
                                              <td
                                                   v-if="GlobalService.isAdmin()"
-                                                  class="d-none d-sm-table-cell fw-semibold text-muted text-center"
+                                                  class="d-none d-xl-table-cell fw-semibold text-muted text-center"
                                              >
                                                   <a href="javascript:void(0)">
                                                        {{
@@ -320,7 +294,7 @@ const routeslast = ref(["categories - List"]);
                                              </td>
                                              <td
                                                   v-if="GlobalService.isAdmin()"
-                                                  class="d-none d-sm-table-cell text-center"
+                                                  class="text-center"
                                              >
                                                   <button
                                                        @click="
@@ -337,8 +311,8 @@ const routeslast = ref(["categories - List"]);
                                                   </button>
                                              </td>
                                         </tr>
-                                   </tbody>
-                              </table>
+                                   </template>
+                              </v-table>
                          </div>
                          <!-- END Recent Orders Table -->
                     </div>

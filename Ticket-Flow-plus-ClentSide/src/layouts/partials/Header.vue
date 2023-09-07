@@ -145,14 +145,6 @@ const user = JSON.parse(localStorage.getItem("user"));
                     <p class="mt-2 mb-0 fw-medium">{{user.fullName}}</p>
      
                   </div>
-                  <div class="p-2">
-                    <a
-                      class="dropdown-item d-flex align-items-center justify-content-between"
-                      href="javascript:void(0)"
-                    >
-                      <span class="fs-sm fw-medium">Settings</span>
-                    </a>
-                  </div>
                   <div role="separator" class="dropdown-divider m-0"></div>
                   <div class="p-2">
                    
@@ -230,16 +222,7 @@ const user = JSON.parse(localStorage.getItem("user"));
                 </div>
               </div>
               <!-- END Notifications Dropdown -->
-
-              <!-- Toggle Side Overlay -->
-              <button
-                type="button"
-                class="btn btn-sm btn-alt-secondary ms-2"
-                @click="store.sideOverlay({ mode: 'toggle' })"
-              >
-                <i class="fa fa-fw fa-list-ul fa-flip-horizontal"></i>
-              </button>
-              <!-- END Toggle Side Overlay -->
+ 
             </slot>
           </div>
           <!-- END Right Section -->

@@ -99,13 +99,12 @@ onMounted(() => {
       <div class="content-header">
         <slot name="header" >
               <!-- Logo -->
-              <RouterLink :to="{ name: 'ticketflowplus-dashboard' }" class="fw-semibold text-dual" >
+              <RouterLink :to="{ name: 'ticketflowplus-dashboard' }" class="fw-semibold text-dual text-center" >
                 <span  class="smini-visible">
-                  <img style="width: 30px; margin-right: 30px; margin-top: 30px; margin-left: -10px; background-color: beige; border-radius: 60px;" src="/assets/media/photos/toothless.png" alt="Logo">           
+                  <img style="width: 30px; background-color: white; margin-left: -8px; border-radius: 60px;" src="/assets/media/photos/toothless.png" alt="Logo">           
                 </span>
-                <span class=" smini-hide fs-5 tracking-wider">
-                  Ticket Flow
-                  <span class=" d-flex justify-content-center fw-normal">Plus</span>
+                <span style="margin-left: 28px;" class="smini-hide fs-5 tracking-wider text-center">
+                       T-F-Plus
                 </span>
               </RouterLink>
              <!-- END Logo -->

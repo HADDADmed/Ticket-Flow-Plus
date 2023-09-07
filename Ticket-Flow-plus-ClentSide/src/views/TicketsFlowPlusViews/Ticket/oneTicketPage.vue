@@ -245,6 +245,7 @@ setInterval(() => {
                                    "
                               >
                                    <div
+                      
                                         style="margin-bottom: 13px"
                                         class="status text-center"
                                         :class="
@@ -514,6 +515,7 @@ setInterval(() => {
                     </BaseBlock>
                </div>
           </div>
+
 
           <div class="col-lg-8 offset-lg-1">
                <BaseBlock

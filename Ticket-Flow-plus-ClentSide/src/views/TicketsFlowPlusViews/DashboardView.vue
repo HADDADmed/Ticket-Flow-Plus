@@ -73,7 +73,7 @@ onMounted(() => {
 
 <template>
   <!-- Hero -->
-  <div class="content">
+  <div class="content animated bounceInRight">
     <div
       class="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center py-2 text-center text-md-start"
   
@@ -85,8 +85,8 @@ onMounted(() => {
           <RouterLink
             :to="{ name: 'ticketflowplus-dashboard' }"
             class="fw-semibold"
-            >{{whoseAuthenticated}}</RouterLink
-          >, everything looks great.
+            >{{user.fullName}}</RouterLink
+          >, to your Ticket Flow Plus Dashboard
         </h2>
       </div>
       
@@ -98,7 +98,7 @@ onMounted(() => {
   <div class="content" >
     <!-- Overview -->
     <div class="row items-push">
-      <div class="col-sm-6 col-xxl-3">
+      <div class="col-sm-6 col-xxl-3 animated bounceInUp">
         <!-- Pending Orders -->
         <BaseBlock class="d-flex flex-column h-100 mb-0">
           <template #content>
@@ -131,7 +131,7 @@ onMounted(() => {
         </BaseBlock>
         <!-- END Pending Orders -->
       </div>
-      <div class="col-sm-6 col-xxl-3">
+      <div class="col-sm-6 col-xxl-3 animated bounceInDown">
         <!-- New Customers -->
         <BaseBlock class="d-flex flex-column h-100 mb-0">
           <template #content>
@@ -163,7 +163,7 @@ onMounted(() => {
         </BaseBlock>
         <!-- END New Customers -->
       </div>
-      <div class="col-sm-6 col-xxl-3">
+      <div class="col-sm-6 col-xxl-3 animated bounceInUp">
         <!-- Messages -->
         <BaseBlock class="d-flex flex-column h-100 mb-0">
           <template #content>
@@ -194,7 +194,7 @@ onMounted(() => {
         </BaseBlock>
         <!-- END Messages -->
       </div>
-      <div class="col-sm-6 col-xxl-3">
+      <div class="col-sm-6 col-xxl-3 animated bounceInDown">
         <!-- Conversion Rate -->
         <BaseBlock class="d-flex flex-column h-100 mb-0">
           <template #content>
@@ -230,13 +230,13 @@ onMounted(() => {
     <!-- END Overview -->
 
     <!-- Statistics -->
-    <div class="row">
+    <div class="row animated  ">
       
         <div :class="whoseAuthenticated=='USER'?'d-flex justify-content-center align-item-center':'col-xl-8 col-xxl-9 d-flex flex-column'">
         <!-- Earnings Summary -->
         <BaseBlock
           title="Tickets Statistics Pie Chart"
-          class="flex-grow-1 d-flex flex-column"
+          class="flex-grow-1 d-flex flex-column animated bounceInRight"
         >
           <template #content>
             <div class="py-3 px-xxl-7">
@@ -250,10 +250,10 @@ onMounted(() => {
         </BaseBlock>
         <!-- END Earnings Summary -->
       </div>
-      <div v-if="whoseAuthenticated == 'ADMIN'" class="col-xl-4 col-xxl-3 d-flex flex-column">
+      <div v-if="whoseAuthenticated == 'ADMIN' || whoseAuthenticated == 'RESPONSIBLE' "  class="col-xl-4 col-xxl-3 d-flex flex-column">
         <!-- Last 2 Weeks -->
         <div class="row items-push flex-grow-1">
-          <div class="col-md-6 col-xl-12">
+          <div class="col-md-6 col-xl-12 animated bounceInLeft">
             
             <BaseBlock class="d-flex flex-column h-100 mb-0">
           <template #content>
@@ -284,7 +284,7 @@ onMounted(() => {
           </template>
         </BaseBlock>
           </div>
-          <div v-if="whoseAuthenticated == 'ADMIN'" class="col-md-6 col-xl-12">
+          <div v-if="whoseAuthenticated == 'ADMIN' || whoseAuthenticated == 'RESPONSIBLE'  " class="col-md-6 col-xl-12 animated bounceInLeft">
             <BaseBlock class="d-flex flex-column h-100 mb-0">
           <template #content>
             <div
@@ -314,7 +314,7 @@ onMounted(() => {
           </template>
         </BaseBlock>
           </div>
-          <div v-if="whoseAuthenticated == 'ADMIN'" class="col-xl-12">
+          <div v-if="whoseAuthenticated == 'ADMIN'" class="col-xl-12 animated bounceInLeft">
             <BaseBlock class="d-flex flex-column h-100 mb-0">
           <template #content>
             <div

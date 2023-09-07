@@ -60,7 +60,7 @@ function toOneTicketPage(ticket_id2) {
 var isLoading = ref(true);
 setTimeout(() => {
      isLoading.value = false;
-}, 500);
+}, 200);
 
 import BaseHeader from "@/layouts/partials/BaseHeader.vue";
 const routesfirst2 = ref(["Home", "Tickets"]);
@@ -133,7 +133,7 @@ const totalPages = ref(0);
           <!-- Recent Orders -->
           <BaseBlock
                v-else
-               title="Tickets List"
+               :title="`${tickets.length} Ticket in Total` "
                class="animated zoomIn"
                style="width: 100%;"
           >
@@ -248,35 +248,32 @@ const totalPages = ref(0);
                          <!-- Recent Orders Table -->
                          <div class="table-responsive">
                               <v-table
-                                   class="table table-hover table-vcenter"
+                                   class="table  table-hover "
                                    :data="tickets"
                                    :filters="filters"
                                    sortHeaderClass="flex items-center justify-between w-full"
-                                   :page-size="10"
+                                   :page-size="7"
                                    v-model:currentPage="currentPage"
                                    @totalPagesChanged="totalPages = $event"
                               >
                                    <template #head>
                                         <tr>
-                                             <th>(ticket,user)_id</th>
-                                             <VTh
+                                              <VTh
                                                   style="cursor: pointer"
                                                   sortKey="user_fullName"
-                                                  >Name</VTh
+                                                  >User</VTh
                                              >
-                                             <th>Title</th>
-                                             <th class="d-none d-sm-table-cell">
-                                                  Content
-                                             </th>
+                                             <th class="d-none d-sm-table-cell">Title</th>
                                              <VTh
                                                   style="cursor: pointer"
                                                   sortKey="category_name"
-                                                  class="d-none d-sm-table-cell"
+                                                  class="d-none d-xl-table-cell"
                                                   >Category</VTh
                                              >
                                              <VTh
                                                   style="cursor: pointer"
                                                   sortKey="status"
+                                                  class="text-center"
                                              >
                                                   <a
                                                        @click="
@@ -289,16 +286,16 @@ const totalPages = ref(0);
                                              <VTh
                                                   style="cursor: pointer"
                                                   sortKey="comment_count"
-                                                  class="d-none d-sm-table-cell"
+                                                  class="d-none d-xl-table-cell text-center"
                                                   >Comments</VTh
                                              >
                                              <VTh
                                                   style="cursor: pointer"
                                                   sortKey="createdAt"
-                                                  class="d-none d-sm-table-cell"
+                                                  class="d-none d-sm-table-cell text-center"
                                                   >created_at</VTh
                                              >
-                                             <th>Actions</th>
+                                             <th class="text-center">Actions</th>
                                         </tr>
                                    </template>
                                    <template #body="{ rows }">
@@ -306,21 +303,10 @@ const totalPages = ref(0);
                                              v-for="ticket in rows"
                                              :key="ticket.id"
                                         >
-                                             <td>
+                                            
+                                             <td class="">
                                                   <a
-                                                       style="margin-left: 25px"
-                                                       class="fw-semibold"
-                                                       href="javascript:void(0)"
-                                                  >
-                                                       #{{ ticket.id }} , #{{
-                                                            ticket.user_id
-                                                       }}
-                                                  </a>
-                                             </td>
-
-                                             <td class="d-xl-table-cell">
-                                                  <a
-                                                       class="d-none d-sm-table-cell fw-semibold"
+                                                       class=" fw-semibold"
                                                        href="javascript:void(0)"
                                                        >{{
                                                             UsersService.getFirstName(
@@ -330,9 +316,9 @@ const totalPages = ref(0);
                                                   >
                                              </td>
 
-                                             <td class="">
+                                             <td class="d-none d-sm-table-cell">
                                                   <a
-                                                       class="fw-semibold"
+                                                       class="fw-semibold "
                                                        href="javascript:void(0)"
                                                        >{{
                                                             GlobalService.shortDescription(
@@ -340,21 +326,7 @@ const totalPages = ref(0);
                                                             )
                                                        }}</a
                                                   >
-                                             </td>
-                                             <td class="d-none d-xl-table-cell">
-                                                  <a
-                                                       class="fw-semibold"
-                                                       href="javascript:void(0)"
-                                                       >{{
-                                                            GlobalService.removeHTMLTags(
-                                                                 GlobalService.shortDescription(
-                                                                      ticket.description
-                                                                 )
-                                                            )
-                                                       }}</a
-                                                  >
-                                             </td>
-
+                                             </td>     
                                              <td class="d-none d-xl-table-cell">
                                                   <a
                                                        class="fw-semibold"
@@ -365,7 +337,7 @@ const totalPages = ref(0);
                                                   >
                                              </td>
                                              <td
-                                                  class="d-none d-sm-table-cell text-center"
+                                                  class=" text-center"
                                              >
                                                   <span
                                                        class="status"
@@ -381,7 +353,7 @@ const totalPages = ref(0);
                                              </td>
                                              <td
                                                   style="text-align: center"
-                                                  class="d-none d-sm-table-cell"
+                                                  class="d-none d-xl-table-cell"
                                              >
                                                   <a
                                                        class="fw-semibold"
@@ -407,7 +379,7 @@ const totalPages = ref(0);
                                                   </a>
                                              </td>
                                              <td
-                                                  class="d-none d-sm-table-cell text-center"
+                                                  class=" text-center"
                                              >
                                                   <button
                                                        @click="

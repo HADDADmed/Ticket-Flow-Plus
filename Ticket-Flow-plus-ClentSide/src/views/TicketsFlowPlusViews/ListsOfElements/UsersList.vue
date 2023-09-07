@@ -14,7 +14,8 @@ const user_statistics = ref({
      users: 0,
      responsibles: 0,
 });
-
+const userRole = JSON.parse(localStorage.getItem("user")).role;
+console.log(userRole);
 const getUsers = async () => {
      try {
           const response = await UsersService.getAllUsers(); // Use getAllUsers method
@@ -46,7 +47,7 @@ onMounted(() => {
 var isLoading = ref(true);
 setTimeout(() => {
      isLoading.value = false;
-}, 500);
+}, 200);
 import { useRoute } from "vue-router";
 import BaseHeader from "@/layouts/partials/BaseHeader.vue";
 const routesfirst2 = ref(["Home", "Users"]);
@@ -73,19 +74,19 @@ function changUserRole(user_id,oldRole){
             return;
      }
      const newRole = oldRole == 'USER' ? 'RESPONSIBLE' : 'USER';
-     // UsersService.changeUserRole(user_id,newRole)
-     //       .then((response) => {
-     //            toaster.show(`<div><i class="fa-solid fa-circle-check"></i> User role changed successfuly !</div>`, {
-     //          position: "top",
-     //          duration: 5000,
-     //          type: "success",
+     UsersService.changeUserRole(user_id,newRole)
+           .then((response) => {
+                toaster.show(`<div><i class="fa-solid fa-circle-check"></i> User role changed successfuly !</div>`, {
+                    position: "top",
+                    duration: 5000,
+                    type: "success",
 
-     //        });
-     //        getUsers();
-     //     })
-     //       .catch((error) => {
-     //            console.log(error);
-     //       });
+            });
+                getUsers();
+         })
+           .catch((error) => {
+                console.log(error);
+           });
      return;
 }
 
@@ -127,14 +128,28 @@ const totalPages = ref(0);
      <!-- END Hero -->
 
      <!-- Page Content -->
-     <div class="content">
-         
-     </div>
+     <div
+               v-if="isLoading"
+               style="
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    text-align: center;
+                    margin-top: 60px;
+               "
+          >
+               <div class="col-6 col-md-3">
+                    <div class="block-content block-content-full">
+                         <i class="fa fa-4x fa-cog fa-spin"></i>
+                    </div>
+               </div>
+          </div>
      <!-- END Page Content -->
 
      <!-- Page Content -->
-     <div class="content">
-          <BaseBlock title="Users List " content-full>
+     <div v-else class="content">
+          <BaseBlock               :title="`${users.length} User in Total` "
+                  content-full   class="animated zoomIn">
                <template #options>
                     <div class="space-x-1">
                          <button
@@ -234,27 +249,27 @@ const totalPages = ref(0);
                     </div>
                <div class="table-responsive">
                     <v-table
-                          class="table table-hover table-vcenter"
+                          class="table   table-hover "
                          :data="users"
                          :filters="filters"
                          sortHeaderClass="flex items-center justify-between w-full"
-                         :page-size="10"
+                         :page-size="7"
                          v-model:currentPage="currentPage"
                          @totalPagesChanged="totalPages = $event"
                     >
                          <template #head>
                               <tr>
                                                        
-                                   <th>User_ID</th>
+                                   <th>ID</th>
                                    <VTh
                                         style="cursor: pointer"
                                         sortKey="fullName"
                                         >Full_Name</VTh
                                    >
-                                   <th class="d-none d-sm-table-cell">
+                                   <th class="d-none d-xl-table-cell">
                                         phone
                                    </th>
-                                   <th class="d-none d-sm-table-cell">
+                                   <th class="d-none d-xl-table-cell">
                                         Email
                                    </th>
                                    <VTh
@@ -262,12 +277,10 @@ const totalPages = ref(0);
                                         style="cursor: pointer"
                                         sortKey="role"
                                         >
-                                        <a @click="filters.name.value = ''"
-                                        >role</a
-                                        >
+                                        role
                                   </VTh>
                                    <VTh
-                                        class="d-none d-sm-table-cell text-center"
+                                        class="text-center"
                                         style="cursor: pointer"
                                         sortKey="tickets_count"
                                         >Tickets</VTh
@@ -275,23 +288,17 @@ const totalPages = ref(0);
                                    <VTh
                                         style="cursor: pointer"
                                         sortKey="hiringDate"
-                                        class="d-none d-sm-table-cell"
+                                        class="d-none d-xl-table-cell "
                                         >HiringDate</VTh
                                    >
-                                   <VTh
-                                        style="cursor: pointer"
-                                        sortKey="birthDate"
-                                        class="d-none d-sm-table-cell"
-                                        >BirthDate</VTh
-                                   >
-                                   <th>Actions</th>
+                                   <th class="d-none d-sm-table-cell text-">Actions</th>
                               </tr>
                          </template>
                          <template #body="{ rows }">
                               <tr v-for="user in rows" :key="user.id">
                                                        <th>
                                                             <a
-                                                       class="d-none d-sm-table-cell fw-semibold"
+                                                       class="  fw-semibold"
                                                        href="javascript:void(0)"
                                                        > 
                                                             {{ user.id }}
@@ -303,15 +310,15 @@ const totalPages = ref(0);
                                                             "
                                                        >
                                                        <a
-                                                       class="d-none d-sm-table-cell fw-semibold"
+                                                       class="  fw-semibold"
                                                        href="javascript:void(0)"
                                                        >
                                                             {{ user.fullName }}
                                                        </a>
                                                        </td>
-                                                       <td>
+                                                       <td class="d-none d-xl-table-cell">
                                                             <a
-                                                       class="d-none d-sm-table-cell fw-semibold"
+                                                       class=" fw-semibold"
                                                        href="javascript:void(0)"
                                                        >
                                                             {{
@@ -319,9 +326,9 @@ const totalPages = ref(0);
                                                             }}
                                                        </a>
                                                        </td>
-                                                       <td>
+                                                       <td class="d-none d-xl-table-cell">
                                                             <a
-                                                       class="d-none d-sm-table-cell fw-semibold"
+                                                       class=" fw-semibold"
                                                        href="javascript:void(0)"
                                                        >{{ user.email }}
                                                        </a>
@@ -357,12 +364,13 @@ const totalPages = ref(0);
                                                             >
                                                        </td>
                                                        <td
+                                                             class="d-none d-xl-table-cell"
                                                             style="
                                                                  min-width: 150px;
                                                             "
                                                        >
                                                        <a
-                                                       class="d-none d-sm-table-cell fw-semibold"
+                                                       class="  fw-semibold"
                                                        href="javascript:void(0)"
                                                        >
                                                                  {{
@@ -372,29 +380,13 @@ const totalPages = ref(0);
                                                                  }}
                                                             </a>
                                                        </td>
-                                                       <td
-                                                            style="
-                                                                 min-width: 150px;
-                                                            "
-                                                       >
-                                                            <a
-                                             
-                                                       class="d-none d-sm-table-cell fw-semibold"
-                                                       href="javascript:void(0)"
-                                                       >
-                                                                 {{
-                                                                      GlobalService.formatDate(
-                                                                           user.birthDate
-                                                                      )
-                                                                 }}
-                                                            </a>
-                                                       </td>
+                                                     
                                                        <td
                                                             class="d-none d-sm-table-cell text-center"
                                                        >
                                                             <button
-                                                             @click="changUserRole(user.id,user.role)"
-                                                                v-if="user.role == 'ADMIN'"
+                                                               @click="changUserRole(user.id,user.role)"
+                                                                v-if="userRole == 'ADMIN'"
                                                                  type="button"
                                                                  class="btn btn-sm btn-alt-secondary hover"
                                                             >
@@ -415,14 +407,14 @@ const totalPages = ref(0);
                          </template>
                     </v-table>
                     <VTPagination
-                                  class="d-flex justify-content-center"
-                                   v-model:currentPage="currentPage"
-                                   :total-pages="totalPages"
-                                   :boundary-links="true"
-                                   :maxPageLinks="3"
-                              />
+                    class="d-flex justify-content-center"
+                         v-model:currentPage="currentPage"
+                         :total-pages="totalPages"
+                         :boundary-links="true"
+                         :maxPageLinks="3"
+                    />
                </div>
-               </template>
+          </template>
           </BaseBlock>
      </div>
      <!-- END Page Content -->

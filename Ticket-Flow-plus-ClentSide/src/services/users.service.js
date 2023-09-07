@@ -16,7 +16,7 @@ class UsersService {
   
   // Create a new user
   createUser(data) {
-    return axios.post(API_URL, data);
+    return axios.post(API_URL+'register', data);
   }
   
   // Get user by token

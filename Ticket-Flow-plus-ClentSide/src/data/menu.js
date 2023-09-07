@@ -53,7 +53,13 @@ if(role == "ADMIN"){
          to: "ticketflowplus-category-add",
          subActivePaths: "ticketflowplus/ticketflowplus-category-add",
          
-       },
+       },{
+        name: "add new User",
+        icon: "fa-solid fa-plus",
+        to: "ticketflowplus-user-add",
+        subActivePaths: "ticketflowplus/ticketflowplus-user-add",
+        
+      },
        {
          name: "",
          heading: true,
