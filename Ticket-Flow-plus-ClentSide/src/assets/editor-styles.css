@@ -62,11 +62,11 @@
 }
 
 .user {
-     background-color: green; /* Red with transparency */
-    color: white;
+     background-color: gray; /* Red with transparency */
+    color: black;
 }
 
 .responsible {
-     background-color: orange; /* Red with transparency */
+     background-color: rgb(45, 45, 99); /* Red with transparency */
     color: white;
 }

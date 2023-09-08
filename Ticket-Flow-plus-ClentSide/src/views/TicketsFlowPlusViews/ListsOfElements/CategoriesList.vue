@@ -1,19 +1,20 @@
 <script setup>
-import { onMounted, reactive, ref } from "vue";
-/// seting up the side bar
-import BackendLayoutSidebarDarkView from "@/views/backend/layout/sidebar/DarkView.vue";
-/// seting up the header
+//importing the ref function from vue and the onMounted function that will be used to call the getCategories function when the component is mounted
+import { onMounted  , ref } from "vue";
+ 
 
-const orderSearch = ref(false);
-
-// import global service
-import GlobalService from "@/services/global.servise.js";
-const user = JSON.parse(localStorage.getItem("user"));
-import { useRouter } from "vue-router";
-const router = useRouter();
+// import Services that we will use
+import GlobalService from "@/services/global.service.js";
 import CategoriesService from "@/services/category.service.js";
 
+
+
+//creating a new ref object that will hold the orderSearch state
+const orderSearch = ref(false);
+//creating a new ref object that will hold the categories data that will be fetched from the database
 const categories = ref([]);
+
+  
 onMounted(() => {
      getCategories();
 });
@@ -27,42 +28,9 @@ const getCategories = async () => {
      }
 };
 
-import { createToaster } from "@meforma/vue-toaster";
+ 
+ 
 
-const toaster = createToaster({});
-
-const tableTrs = ref([
-     {
-          name: "Category_ID",
-          class: "d-none d-xl-table-cell",
-          forAdmin: false,
-     },
-     {
-          name: "Name",
-          class: "",
-          forAdmin: false,
-     },
-     {
-          name: "Description",
-          class: "d-none d-sm-table-cell",
-          forAdmin: false,
-     },
-     {
-          name: "Tickets_Count",
-          class: "text-center",
-          forAdmin: true,
-     },
-     {
-          name: "Created_At",
-          class: "d-none d-xl-table-cell text-center",
-          forAdmin: true,
-     },
-     {
-          name: "Delete",
-          class: "text-center",
-          forAdmin: true,
-     },
-]);
 
 var isLoading = ref(true);
 setTimeout(() => {
@@ -74,18 +42,11 @@ function deleteCat(category_id) {
           const response = CategoriesService.deleteCategoryById(
                category_id
           ).then((response) => {
-               toaster.show("Category Deleted Successfully", {
-                    type: "success",
-               });
+               GlobalService.toasterShowSuccess(
+                    `Category deleted successfuly !`
+               );
                getCategories();
-          }); // Use getAllUsers method
-          // if (response) {
-          //   toaster.show("Category Deleted Successfully", {
-          //     type: "success",
-          //   });
-          //   getCategories();
-          // }
-          // console.log(response);
+          });  
      } catch (error) {
           console.error("Error fetching categories:", error);
      }
@@ -197,9 +158,7 @@ const totalPages = ref(0);
                     </div>
                     <div class="block-content block-content-full">
                          <!-- Recent Orders Table -->
-                         <div class="table-responsive">
-
-                              
+                         <div class="table-responsive"> 
                               <v-table
                                    class="table table-hover table-vcenter"
                                    :data="categories"
@@ -211,20 +170,43 @@ const totalPages = ref(0);
                               >
                               <template #head>
                                         <tr>
-                                             <th
-                                                  v-for="tableTr in tableTrs"
-                                                  :class="tableTr.class"
-                                                  style="font-size: 12px"
+                                             <VTh
+                                                  style="cursor: pointer"
+                                                  sortKey="id"
+                                                  class="d-none d-xl-table-cell text-center"
+                                                  >ID</VTh
                                              >
-                                                  <div
-                                                       v-if="
-                                                            !tableTr.forAdmin ||
-                                                            GlobalService.isAdmin()
-                                                       "
-                                                  >
-                                                       {{ tableTr.name }}
-                                                  </div>
-                                             </th>
+                                             <VTh
+                                                  style="cursor: pointer"
+                                                  sortKey="name"
+                                                  class=""
+                                                  >Name</VTh
+                                             >
+                                             <VTh
+                                                  style="cursor: pointer"
+                                                  sortKey="description"
+                                                  class="d-none d-sm-table-cell"
+                                                  >Description</VTh
+                                             >
+                                             <VTh
+                                                  style="cursor: pointer"
+                                                  sortKey="tickets_Count"
+                                                  class=" text-center"
+                                                  >Tickets_Count</VTh
+                                             >
+                                             <VTh
+                                                  style="cursor: pointer"
+                                                  sortKey="createdAt"
+                                                  class="d-none d-xl-table-cell text-center"
+                                                  >Created_At</VTh
+                                             >
+                                             <th
+                                                  style="cursor: pointer"
+                                                  class=" text-center"
+                                                  >Delete</th
+                                             >
+
+                                             
                                         </tr>
                                         <!-- <tr>
                   <th>Category ID</th>
@@ -271,7 +253,7 @@ const totalPages = ref(0);
                                                   class=" text-center"
                                              >
                                                   <a href="javascript:void(0)">
-                                                       <a  @click="router.push({name:'ticketflowplus-tickets-list',query:{ filter_terme: category.name}})"
+                                                       <a  @click="GlobalService.routerPush('ticketflowplus-tickets-list',null,{ filter_terme: category.name})"
                                                             class="fs-xs fw-semibold mb-0"
                                                        >
                                                             {{
@@ -316,6 +298,13 @@ const totalPages = ref(0);
                          </div>
                          <!-- END Recent Orders Table -->
                     </div>
+                    <VTPagination
+                              class="d-flex justify-content-center"
+                                   v-model:currentPage="currentPage"
+                                   :total-pages="totalPages"
+                                   :boundary-links="true"
+                                   :maxPageLinks="3"
+                              />
                </template>
           </BaseBlock>
           <!-- END Recent Orders -->

@@ -10,8 +10,8 @@ import BasePageHeading from "@/components/BasePageHeading.vue";
 import clickRipple from "@/directives/clickRipple";
 import * as bootstrap from "bootstrap";
 window.bootstrap = bootstrap;
-
 const app = createApp(App);
+
 // creating vue app instance
 
 
@@ -43,6 +43,8 @@ axios.interceptors.response.use(
 import SmartTable from 'vuejs-smart-table'
 
 app.use(SmartTable)
+ 
 
+ // app.config.globalProperties.GlobalService = GlobalService;
 
 app.mount("#app");

@@ -1,32 +1,42 @@
 <script setup>
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, ref } from "vue";
 
-// importing the global.servise to use the global  fnctions
-import GlobalService from "@/services/global.servise.js";
-
-import { useRouter } from "vue-router";
-import { useRoute } from "vue-router";
-const route = useRoute();
-const router = useRouter();
-/// import the layout header component
-
-// fetching the list of users from the server by using UsersService
+// importing all services that we will use
+import GlobalService from "@/services/global.service.js";
 import TicketsService from "@/services/tickets.service.js";
 import UsersService from "@/services/users.service.js";
+import { useRoute } from "vue-router";
+// importing the BaseHeader component from the components folder
+import BaseHeader from "@/layouts/partials/BaseHeader.vue";
 
-import { createToaster } from "@meforma/vue-toaster";
-
-const toaster = createToaster({});
+const route = useRoute();
 const tickets = ref([]);
 const orderSearch = ref(false);
+const user = GlobalService.getCurrentUser();
+
+// collecting query params from the url
 const user_id_tickets = route.query.user_id_tickets
      ? route.query.user_id_tickets
-     : null;  
+     : null;
 const filter_terme = route.query.filter_terme ? route.query.filter_terme : "";
+
+
+
+// creating a reactive variable to store the tickets statistics
+const tickets_count = ref({
+     total: 0,
+     pending: 0,
+     open: 0,
+     closed: 0,
+});
+
+
 const getTickets = async () => {
      try {
           const response = await TicketsService.getAllTickets(user_id_tickets); // Use getAllUsers method
+          // updating the tickets list with the response data (tickets)
           tickets.value = response.data;
+          // updating the tickets statistics with the response data (tickets)
           tickets_count.value = {
                total: response.data.length,
                pending: response.data.filter(
@@ -48,31 +58,15 @@ onMounted(() => {
      getTickets();
 });
 
-function deleteTicket() {}
 
-function toOneTicketPage(ticket_id2) {
-     router.push({
-          name: "ticketflowplus-ticket-oneticketpage",
-          query: { ticket_id: ticket_id2 },
-     });
-}
-
+// creating a reactive variable to store the loading state
 var isLoading = ref(true);
 setTimeout(() => {
      isLoading.value = false;
 }, 200);
 
-import BaseHeader from "@/layouts/partials/BaseHeader.vue";
 const routesfirst2 = ref(["Home", "Tickets"]);
 const routeslast = ref(["tickets - List"]);
-const user = JSON.parse(localStorage.getItem("user"));
-
-const tickets_count = ref({
-     total: 0,
-     pending: 0,
-     open: 0,
-     closed: 0,
-});
 
 ///////// filters
 const filters = ref({
@@ -87,9 +81,10 @@ const filters = ref({
           ],
      },
 });
-
+// currentPage and totalPages are reactive variables that we will use to manage the pagination
 const currentPage = ref(1);
 const totalPages = ref(0);
+
 </script>
 
 <template>
@@ -133,9 +128,9 @@ const totalPages = ref(0);
           <!-- Recent Orders -->
           <BaseBlock
                v-else
-               :title="`${tickets.length} Ticket in Total` "
+               :title="`${tickets.length} Ticket in Total`"
                class="animated zoomIn"
-               style="width: 100%;"
+               style="width: 100%"
           >
                <template #options>
                     <div class="space-x-1">
@@ -248,7 +243,7 @@ const totalPages = ref(0);
                          <!-- Recent Orders Table -->
                          <div class="table-responsive">
                               <v-table
-                                   class="table  table-hover "
+                                   class="table table-hover"
                                    :data="tickets"
                                    :filters="filters"
                                    sortHeaderClass="flex items-center justify-between w-full"
@@ -258,12 +253,14 @@ const totalPages = ref(0);
                               >
                                    <template #head>
                                         <tr>
-                                              <VTh
+                                             <VTh
                                                   style="cursor: pointer"
                                                   sortKey="user_fullName"
                                                   >User</VTh
                                              >
-                                             <th class="d-none d-sm-table-cell">Title</th>
+                                             <th class="d-none d-sm-table-cell">
+                                                  Title
+                                             </th>
                                              <VTh
                                                   style="cursor: pointer"
                                                   sortKey="category_name"
@@ -295,7 +292,9 @@ const totalPages = ref(0);
                                                   class="d-none d-sm-table-cell text-center"
                                                   >created_at</VTh
                                              >
-                                             <th class="text-center">Actions</th>
+                                             <th class="text-center">
+                                                  Actions
+                                             </th>
                                         </tr>
                                    </template>
                                    <template #body="{ rows }">
@@ -303,10 +302,9 @@ const totalPages = ref(0);
                                              v-for="ticket in rows"
                                              :key="ticket.id"
                                         >
-                                            
                                              <td class="">
                                                   <a
-                                                       class=" fw-semibold"
+                                                       class="fw-semibold"
                                                        href="javascript:void(0)"
                                                        >{{
                                                             UsersService.getFirstName(
@@ -318,7 +316,7 @@ const totalPages = ref(0);
 
                                              <td class="d-none d-sm-table-cell">
                                                   <a
-                                                       class="fw-semibold "
+                                                       class="fw-semibold"
                                                        href="javascript:void(0)"
                                                        >{{
                                                             GlobalService.shortDescription(
@@ -326,7 +324,7 @@ const totalPages = ref(0);
                                                             )
                                                        }}</a
                                                   >
-                                             </td>     
+                                             </td>
                                              <td class="d-none d-xl-table-cell">
                                                   <a
                                                        class="fw-semibold"
@@ -336,9 +334,7 @@ const totalPages = ref(0);
                                                        }}</a
                                                   >
                                              </td>
-                                             <td
-                                                  class=" text-center"
-                                             >
+                                             <td class="text-center">
                                                   <span
                                                        class="status"
                                                        :class="
@@ -378,13 +374,16 @@ const totalPages = ref(0);
                                                        }}
                                                   </a>
                                              </td>
-                                             <td
-                                                  class=" text-center"
-                                             >
+                                             <td class="text-center">
                                                   <button
                                                        @click="
-                                                            toOneTicketPage(
-                                                                 ticket.id
+                                                            GlobalService.routerPush(
+                                                                 'ticketflowplus-ticket-oneticketpage',
+                                                                 null,
+                                                                 {
+                                                                      ticket_id:
+                                                                           ticket.id,
+                                                                 }
                                                             )
                                                        "
                                                        type="button"
@@ -407,7 +406,7 @@ const totalPages = ref(0);
                                    </template>
                               </v-table>
                               <VTPagination
-                              class="d-flex justify-content-center"
+                                   class="d-flex justify-content-center"
                                    v-model:currentPage="currentPage"
                                    :total-pages="totalPages"
                                    :boundary-links="true"

@@ -1,63 +1,70 @@
 <script setup>
-import { onMounted, reactive, ref } from "vue";
-// import global service
-import GlobalService from "@/services/global.servise.js";
-import CategoriesService from "@/services/category.service.js";
-import { useRouter } from "vue-router";
-const route = useRouter();
 
+//importing the ref function from vue 
+import { ref } from "vue";
+
+
+//importing the BaseHeading component from the components folder
+import  BaseHeader from "@/layouts/partials/BaseHeader.vue";
+
+
+
+//importing the Services that wee will use from the services folder
+import GlobalService from "@/services/global.service.js";
+import CategoriesService from "@/services/category.service.js";
+
+ 
+
+//creating a new ref object that will hold the new category data
 const newCategory = ref({
      name: "",
      description: "",
 });
 
-import { createToaster } from "@meforma/vue-toaster";
 
-const toaster = createToaster({ });
 
+//function that will add the new category to the database
 function addNewCategory() {
+     //calling the createCategory function from the category service and passing the new category data to it
     CategoriesService.createCategory(newCategory.value)
           .then((response) => {
+           //reseting the new category data
             newCategory.value = {
                     title: "",
                     content: "",
                     category_id: "",
                };
-    toaster.show(`<div><i class="fa-solid fa-circle-check"></i> Category added successfuly !</div>`, {
-              position: "top",
-              duration: 5000,
-              type: "success",
-
-            });
-            route.push({ name: "ticketflowplus-categories-list" });
+           //showing a toaster message to the user
+           GlobalService.toasterShowSuccess(`Category added successfuly !`);
+           //redirecting the user to the categories list page
+           GlobalService.routerPush( 'ticketflowplus-categories-list')
+         
         })
 
           .catch((error) => {
+               //showing a toaster error message to the user
+               // GlobalService.toasterShowError(error.response.data.error);
                console.log(error);
           });
 }
 
 
+
+
+// creaatting a new ref object that will hold the routes that will be passed to the BaseHeader component
+const routesfirst2 = ref(["new element", "Category"]);
+const routeslast = ref(["category add form"]);
+
 </script>
 
 <template>
      <!-- Hero -->
-     <BasePageHeading title="add New Ticket">
-          <template #extra>
-               <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb breadcrumb-alt">
-                         <li class="breadcrumb-item">
-                              <a class="link-fx" href="javascript:void(0)"
-                                   >AddNewElement</a
-                              >
-                         </li>
-                         <li class="breadcrumb-item" aria-current="page">
-                              Ticket
-                         </li>
-                    </ol>
-               </nav>
-          </template>
-     </BasePageHeading>
+     <BaseHeader
+          title="Add New Category"
+          subtitle="Pleas fill the form belong then save."
+          :routesfirst2="routesfirst2"
+          :routeslast="routeslast"
+     />     
      <!-- END Hero -->
 
      <!-- Page Content -->
@@ -117,4 +124,5 @@ function addNewCategory() {
           <!-- END Floating Labels -->
      </div>
      <!-- END Page Content -->
+     
 </template>

@@ -59,6 +59,7 @@ router.post('/',(req:any, res:any) => {
         } else {
             console.log(err);
             console.log("an error was occured while adding category");
+            res.status(500).json({ error: "Internal server error" });
         }
     }
     );

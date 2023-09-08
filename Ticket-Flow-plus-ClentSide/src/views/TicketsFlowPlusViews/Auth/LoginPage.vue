@@ -1,17 +1,17 @@
 <script setup>
 import { reactive, computed, ref } from "vue";
-import { useRouter } from "vue-router";
 import { useTemplateStore } from "@/stores/template";
 
 // Vuelidate, for more info and examples you can check out https://github.com/vuelidate/vuelidate
 import useVuelidate from "@vuelidate/core";
 import { required, minLength } from "@vuelidate/validators";
+
 import AuthService from "@/services/auth.service.js";
+import GlobalService from "@/services/global.service.js";
 
 // Main store and Router
 const store = useTemplateStore();
-const router = useRouter();
-
+ 
 // Input user variables
 const user = reactive({
   email: null,
@@ -34,10 +34,9 @@ const rules = computed(() => {
 
 // Use vuelidate
 const v$ = useVuelidate(rules, user);
-import { createToaster } from "@meforma/vue-toaster";
-
-const toaster = createToaster({ });
+ 
 var errorMessage = ref(null);      
+
 // On form submission
 async function onSubmit() {
   const result = await v$.value.$validate();
@@ -48,33 +47,19 @@ async function onSubmit() {
   try {
     const response = await AuthService.login(user.email, user.password);
     if (response) {
-    toaster.show(`<div><i class="fa-solid fa-circle-check"></i> Welcome  ${response.user.fullName} to TicketsFlowPlus !</div>`, {
-              position: "top",
-              duration: 5000,
-              type: "success",
-
-            });
-      router.push({ name: "ticketflowplus-dashboard" });
-    }
+      GlobalService.toasterShowSuccess(`Welcome ${response.user.fullName} to TicketsFlowPlus !`);
+      GlobalService.routerPush('ticketflowplus-dashboard');
+     }
   } catch (error) {
           if (error.response) {
             errorMessage.value = error.response.data.error;
-            toaster.show(`<div><i class="fa-solid fa-triangle-exclamation"></i> Invalide Credentials  !</div>`, {
-              position: "top",
-              duration: 5000,
-              type: "error",
-
-            });
+ 
           } else {
-            toaster.show(`<div><i class="fa-solid fa-triangle-exclamation"></i> Invalide Credentials  !</div>`, {
-              position: "top",
-              duration: 5000,
-              type: "error",
+            errorMessage.value = 'An error occurred';   
+           }
+          GlobalService.toasterShowError(errorMessage.value);
+          }
 
-            });
-          errorMessage.value = 'An error occurred';
-          }
-          }
 }
 </script>
 

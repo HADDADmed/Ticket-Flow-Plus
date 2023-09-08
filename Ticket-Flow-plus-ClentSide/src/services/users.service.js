@@ -63,11 +63,11 @@ class UsersService {
     getUserRoleClass(role) {
 
         if (role === "ADMIN") {
-            return "badge bg-danger ";
+            return "admin";
         } else if (role === "USER") {
-            return "badge bg-success ";
+            return "user";
       } else if (role === "RESPONSIBLE") {
-            return "badge bg-warning";
+            return "responsible";
         } // default
         else {
             return "badge bg-light text-dark";
@@ -96,10 +96,8 @@ class UsersService {
             return ticketCount;
         }
 }
-
       getCurrentUser() {
-
-          return JSON.parse(localStorage.getItem('user'));
+        return JSON.parse(localStorage.getItem('user'));
       }
 
 

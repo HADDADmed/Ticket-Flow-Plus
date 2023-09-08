@@ -1,12 +1,17 @@
 <script setup>
-import { ref } from "vue";
+// importing the ref function from vue and the onMounted function from vue
+import { ref, onMounted } from "vue";
 
-const orderSearch = ref(false);
-const user = JSON.parse(localStorage.getItem("user"));
-import GlobalService from "@/services/global.servise.js";
+// importing Services that wee will use from the services folder
+import GlobalService from "@/services/global.service.js";
 import UsersService from "@/services/users.service.js";
-import { createToaster } from "@meforma/vue-toaster";
-const toaster = createToaster({});
+
+import { useRoute } from "vue-router";
+import BaseHeader from "@/layouts/partials/BaseHeader.vue";
+
+const route = useRoute();
+const filter_terme = route.query.filter_terme ? route.query.filter_terme : "";
+
 const users = ref([]);
 const isAuthorized = ref(false);
 const user_statistics = ref({
@@ -14,8 +19,26 @@ const user_statistics = ref({
      users: 0,
      responsibles: 0,
 });
-const userRole = JSON.parse(localStorage.getItem("user")).role;
-console.log(userRole);
+
+const orderSearch = ref(false);
+const user = GlobalService.getCurrentUser();
+const userRole = user.role;
+
+const filters = ref({
+     name: {
+          value: filter_terme,
+          keys: [
+               "fullName",
+               "phoneNumber",
+               "email",
+               "role",
+               "tickets_count",
+               "hiringDate",
+               "birthDate",
+          ],
+     },
+});
+
 const getUsers = async () => {
      try {
           const response = await UsersService.getAllUsers(); // Use getAllUsers method
@@ -30,88 +53,56 @@ const getUsers = async () => {
                ).length;
                user_statistics.value.responsibles = response.data.filter(
                     (user) => user.role == "RESPONSIBLE"
-               ).length;  
+               ).length;
           }
      } catch (error) {
           console.error("Error fetching users:", error);
      }
 };
 
+function changUserRole(user_id, oldRole) {
+     if (oldRole == "ADMIN") {
+          GlobalService.toasterShowWarning(
+               `You can't change the role of this user !`
+          );
+          return;
+     }
+     const newRole = oldRole == "USER" ? "RESPONSIBLE" : "USER";
+     UsersService.changeUserRole(user_id, newRole)
+          .then((response) => {
+               GlobalService.toasterShowSuccess(
+                    `User role changed successfuly !`
+               );
+               getUsers();
+          })
+          .catch((error) => {
+               console.log(error);
+          });
+     return;
+}
+
+function toTicketList(user_id_tickets, tickets_count) {
+     if (tickets_count == 0) {
+          GlobalService.toasterShowWarning(`This user have no tickets !`);
+          return;
+     }
+     GlobalService.routerPush("ticketflowplus-tickets-list", null, {
+          user_id_tickets: user_id_tickets,
+     });
+}
+
 onMounted(() => {
      getUsers();
 });
-
-/// tableTrs is a reactive jason array that contains the table headers
-
 
 var isLoading = ref(true);
 setTimeout(() => {
      isLoading.value = false;
 }, 200);
-import { useRoute } from "vue-router";
-import BaseHeader from "@/layouts/partials/BaseHeader.vue";
+
 const routesfirst2 = ref(["Home", "Users"]);
 const routeslast = ref(["users - List"]);
-const route = useRoute();
-const filter_terme = route.query.filter_terme ? route.query.filter_terme : "";
-console.log(filter_terme);
-////////////////////////////////////////////////////
-import { computed, onMounted } from "vue";
 
-
-import { useRouter } from "vue-router";
-const router = useRouter();
-
-function changUserRole(user_id,oldRole){
-     if(oldRole == 'ADMIN')
-     {
-          toaster.show(`<div><i class="fa-solid fa-circle-check"></i> You can't change the role of this user !</div>`, {
-              position: "top",
-              duration: 5000,
-              type: "warning",
-
-            });
-            return;
-     }
-     const newRole = oldRole == 'USER' ? 'RESPONSIBLE' : 'USER';
-     UsersService.changeUserRole(user_id,newRole)
-           .then((response) => {
-                toaster.show(`<div><i class="fa-solid fa-circle-check"></i> User role changed successfuly !</div>`, {
-                    position: "top",
-                    duration: 5000,
-                    type: "success",
-
-            });
-                getUsers();
-         })
-           .catch((error) => {
-                console.log(error);
-           });
-     return;
-}
-
-function toTicketList(user_id_tickets,tickets_count) {
-     if(tickets_count == 0)
-     {
-          toaster.show(`<div><i class="fa-solid fa-circle-check"></i> This user have no tickets !</div>`, {
-              position: "top",
-              duration: 5000,
-              type: "warning",
-
-            });
-            return;
-     }
-     router.push({
-          name: "ticketflowplus-tickets-list",
-          query: { user_id_tickets: user_id_tickets },
-     });
-}
-const filters = ref({
-     name: {
-          value: filter_terme,
-          keys: ["fullName", "phoneNumber", "email", "role", "tickets_count", "hiringDate", "birthDate"]
-     },
-});
 const currentPage = ref(1);
 const totalPages = ref(0);
 </script>
@@ -129,27 +120,30 @@ const totalPages = ref(0);
 
      <!-- Page Content -->
      <div
-               v-if="isLoading"
-               style="
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    text-align: center;
-                    margin-top: 60px;
-               "
-          >
-               <div class="col-6 col-md-3">
-                    <div class="block-content block-content-full">
-                         <i class="fa fa-4x fa-cog fa-spin"></i>
-                    </div>
+          v-if="isLoading"
+          style="
+               display: flex;
+               justify-content: center;
+               align-items: center;
+               text-align: center;
+               margin-top: 60px;
+          "
+     >
+          <div class="col-6 col-md-3">
+               <div class="block-content block-content-full">
+                    <i class="fa fa-4x fa-cog fa-spin"></i>
                </div>
           </div>
+     </div>
      <!-- END Page Content -->
 
      <!-- Page Content -->
      <div v-else class="content">
-          <BaseBlock               :title="`${users.length} User in Total` "
-                  content-full   class="animated zoomIn">
+          <BaseBlock
+               :title="`${users.length} User in Total`"
+               content-full
+               class="animated zoomIn"
+          >
                <template #options>
                     <div class="space-x-1">
                          <button
@@ -163,7 +157,10 @@ const totalPages = ref(0);
                          >
                               <i class="fa fa-search"></i>
                          </button>
-                         <div class="dropdown d-inline-block" v-if="user.role == 'ADMIN'">
+                         <div
+                              class="dropdown d-inline-block"
+                              v-if="user.role == 'ADMIN'"
+                         >
                               <button
                                    type="button"
                                    class="btn btn-sm btn-alt-secondary"
@@ -185,22 +182,22 @@ const totalPages = ref(0);
                                         class="dropdown-item fw-medium d-flex align-items-center justify-content-between"
                                         href="javascript:void(0)"
                                    >
-                                        Users 
+                                        Users
                                         <span
                                              class="badge bg-primary rounded-pill"
-                                             ></span
-                                        >
+                                        ></span>
                                    </a>
                                    <a
-                                        @click="filters.name.value = 'RESPONSIBLE'"
+                                        @click="
+                                             filters.name.value = 'RESPONSIBLE'
+                                        "
                                         class="dropdown-item fw-medium d-flex align-items-center justify-content-between"
                                         href="javascript:void(0)"
                                    >
                                         Responsibles
                                         <span
                                              class="badge bg-primary rounded-pill"
-                                             ></span
-                                        >
+                                        ></span>
                                    </a>
                                    <a
                                         @click="filters.name.value = ''"
@@ -210,8 +207,7 @@ const totalPages = ref(0);
                                         All
                                         <span
                                              class="badge bg-primary rounded-pill"
-                                             ></span
-                                        >
+                                        ></span>
                                    </a>
                               </div>
                          </div>
@@ -219,7 +215,6 @@ const totalPages = ref(0);
                </template>
 
                <template #content>
-
                     <div
                          v-if="orderSearch"
                          id="one-dashboard-search-orders"
@@ -247,174 +242,172 @@ const totalPages = ref(0);
                          </form>
                          <!-- END Search Form -->
                     </div>
-               <div class="table-responsive">
-                    <v-table
-                          class="table   table-hover "
-                         :data="users"
-                         :filters="filters"
-                         sortHeaderClass="flex items-center justify-between w-full"
-                         :page-size="7"
-                         v-model:currentPage="currentPage"
-                         @totalPagesChanged="totalPages = $event"
-                    >
-                         <template #head>
-                              <tr>
-                                                       
-                                   <th>ID</th>
-                                   <VTh
-                                        style="cursor: pointer"
-                                        sortKey="fullName"
-                                        >Full_Name</VTh
-                                   >
-                                   <th class="d-none d-xl-table-cell">
-                                        phone
-                                   </th>
-                                   <th class="d-none d-xl-table-cell">
-                                        Email
-                                   </th>
-                                   <VTh
-                                        class="text-center"
-                                        style="cursor: pointer"
-                                        sortKey="role"
+                    <div class="table-responsive">
+                         <v-table
+                              class="table table-hover"
+                              :data="users"
+                              :filters="filters"
+                              sortHeaderClass="flex items-center justify-between w-full"
+                              :page-size="7"
+                              v-model:currentPage="currentPage"
+                              @totalPagesChanged="totalPages = $event"
+                         >
+                              <template #head>
+                                   <tr>
+                                        <th>ID</th>
+                                        <VTh
+                                             style="cursor: pointer"
+                                             sortKey="fullName"
+                                             >Full_Name</VTh
                                         >
-                                        role
-                                  </VTh>
-                                   <VTh
-                                        class="text-center"
-                                        style="cursor: pointer"
-                                        sortKey="tickets_count"
-                                        >Tickets</VTh
-                                   >
-                                   <VTh
-                                        style="cursor: pointer"
-                                        sortKey="hiringDate"
-                                        class="d-none d-xl-table-cell "
-                                        >HiringDate</VTh
-                                   >
-                                   <th class="d-none d-sm-table-cell text-">Actions</th>
-                              </tr>
-                         </template>
-                         <template #body="{ rows }">
-                              <tr v-for="user in rows" :key="user.id">
-                                                       <th>
-                                                            <a
-                                                       class="  fw-semibold"
-                                                       href="javascript:void(0)"
-                                                       > 
-                                                            {{ user.id }}
-                                                       </a>
-                                                       </th>
-                                                       <td
-                                                            style="
-                                                                 min-width: 150px;
-                                                            "
-                                                       >
-                                                       <a
-                                                       class="  fw-semibold"
-                                                       href="javascript:void(0)"
-                                                       >
-                                                            {{ user.fullName }}
-                                                       </a>
-                                                       </td>
-                                                       <td class="d-none d-xl-table-cell">
-                                                            <a
-                                                       class=" fw-semibold"
-                                                       href="javascript:void(0)"
-                                                       >
-                                                            {{
-                                                                 user.phoneNumber
-                                                            }}
-                                                       </a>
-                                                       </td>
-                                                       <td class="d-none d-xl-table-cell">
-                                                            <a
-                                                       class=" fw-semibold"
-                                                       href="javascript:void(0)"
-                                                       >{{ user.email }}
-                                                       </a>
-                                                       </td>
-                                                       <td
-                                                            class="btn  rounded-pill text-center d-flex align-items-center justify-content-center"
-                                                            :class="
-                                                                 UsersService.getUserRoleClass(
-                                                                      user.role
-                                                                 )
-                                                            "
-                                                       >
-                                                            {{ user.role }}
-                                                       </td>
-                                                       <td
-                                                            class="text-center"
-                                                            style="
-                                                                 min-width: 150px;
-                                                              
-                                                            "
-                                                       >
-                                                            <a
-                                                                 class="badge bg-primary rounded-pill text-center"
-                                                                 style="cursor: pointer;"
-                                                                 @click="
-                                                                      toTicketList(
-                                                                           user.id,user.tickets_count
-                                                                      )
-                                                                 "
-                                                                 >{{
-                                                                      user.tickets_count
-                                                                 }}</a
-                                                            >
-                                                       </td>
-                                                       <td
-                                                             class="d-none d-xl-table-cell"
-                                                            style="
-                                                                 min-width: 150px;
-                                                            "
-                                                       >
-                                                       <a
-                                                       class="  fw-semibold"
-                                                       href="javascript:void(0)"
-                                                       >
-                                                                 {{
-                                                                      GlobalService.formatDate(
-                                                                           user.hiringDate
-                                                                      )
-                                                                 }}
-                                                            </a>
-                                                       </td>
-                                                     
-                                                       <td
-                                                            class="d-none d-sm-table-cell text-center"
-                                                       >
-                                                            <button
-                                                               @click="changUserRole(user.id,user.role)"
-                                                                v-if="userRole == 'ADMIN'"
-                                                                 type="button"
-                                                                 class="btn btn-sm btn-alt-secondary hover"
-                                                            >
-                                                            <i class="fa-solid fa-clock-rotate-left"> </i>
+                                        <th class="d-none d-xl-table-cell">
+                                             phone
+                                        </th>
+                                        <th class="d-none d-xl-table-cell">
+                                             Email
+                                        </th>
+                                        <VTh
+                                             class="text-center"
+                                             style="cursor: pointer"
+                                             sortKey="role"
+                                        >
+                                             role
+                                        </VTh>
+                                        <VTh
+                                             class="text-center"
+                                             style="cursor: pointer"
+                                             sortKey="tickets_count"
+                                             >Tickets</VTh
+                                        >
+                                        <VTh
+                                             style="cursor: pointer"
+                                             sortKey="hiringDate"
+                                             class="d-none d-xl-table-cell"
+                                             >HiringDate</VTh
+                                        >
+                                        <th
+                                             class="d-none d-sm-table-cell text-"
+                                        >
+                                             Actions
+                                        </th>
+                                   </tr>
+                              </template>
+                              <template #body="{ rows }">
+                                   <tr v-for="user in rows" :key="user.id">
+                                        <th>
+                                             <a
+                                                  class="fw-semibold"
+                                                  href="javascript:void(0)"
+                                             >
+                                                  {{ user.id }}
+                                             </a>
+                                        </th>
+                                        <td style="min-width: 150px">
+                                             <a
+                                                  class="fw-semibold"
+                                                  href="javascript:void(0)"
+                                             >
+                                                  {{ user.fullName }}
+                                             </a>
+                                        </td>
+                                        <td class="d-none d-xl-table-cell">
+                                             <a
+                                                  class="fw-semibold"
+                                                  href="javascript:void(0)"
+                                             >
+                                                  {{ user.phoneNumber }}
+                                             </a>
+                                        </td>
+                                        <td class="d-none d-xl-table-cell">
+                                             <a
+                                                  class="fw-semibold"
+                                                  href="javascript:void(0)"
+                                                  >{{ user.email }}
+                                             </a>
+                                        </td>
+                                        <td class="text-center">
+                                             <span
+                                                  class="status"
+                                                  :class="
+                                                       UsersService.getUserRoleClass(
+                                                            user.role
+                                                       )
+                                                  "
+                                                  >{{ user.role }}</span
+                                             >
+                                        </td>
+                                        <td
+                                             class="text-center"
+                                             style="min-width: 150px"
+                                        >
+                                             <a
+                                                  class="badge bg-primary rounded-pill text-center"
+                                                  style="cursor: pointer"
+                                                  @click="
+                                                       toTicketList(
+                                                            user.id,
+                                                            user.tickets_count
+                                                       )
+                                                  "
+                                                  >{{ user.tickets_count }}</a
+                                             >
+                                        </td>
+                                        <td
+                                             class="d-none d-xl-table-cell"
+                                             style="min-width: 150px"
+                                        >
+                                             <a
+                                                  class="fw-semibold"
+                                                  href="javascript:void(0)"
+                                             >
+                                                  {{
+                                                       GlobalService.formatDate(
+                                                            user.hiringDate
+                                                       )
+                                                  }}
+                                             </a>
+                                        </td>
 
-                                                            </button>
-                                                            <button
-                                                                 type="button"
-                                                                 class="btn btn-sm btn-alt-secondary hover"
-                                                            >
-                                                                 <i
-                                                                      class="fa fa-fw fa-times"
-                                                                 ></i>
-                                                            </button>
-                                                           
-                                                       </td>
-                                                  </tr>
-                         </template>
-                    </v-table>
-                    <VTPagination
-                    class="d-flex justify-content-center"
-                         v-model:currentPage="currentPage"
-                         :total-pages="totalPages"
-                         :boundary-links="true"
-                         :maxPageLinks="3"
-                    />
-               </div>
-          </template>
+                                        <td
+                                             class="d-none d-sm-table-cell text-center"
+                                        >
+                                             <button
+                                                  @click="
+                                                       changUserRole(
+                                                            user.id,
+                                                            user.role
+                                                       )
+                                                  "
+                                                  v-if="userRole == 'ADMIN'"
+                                                  type="button"
+                                                  class="btn btn-sm btn-alt-secondary hover"
+                                             >
+                                                  <i
+                                                       class="fa-solid fa-clock-rotate-left"
+                                                  >
+                                                  </i>
+                                             </button>
+                                             <button
+                                                  type="button"
+                                                  class="btn btn-sm btn-alt-secondary hover"
+                                             >
+                                                  <i
+                                                       class="fa fa-fw fa-times"
+                                                  ></i>
+                                             </button>
+                                        </td>
+                                   </tr>
+                              </template>
+                         </v-table>
+                         <VTPagination
+                              class="d-flex justify-content-center"
+                              v-model:currentPage="currentPage"
+                              :total-pages="totalPages"
+                              :boundary-links="true"
+                              :maxPageLinks="3"
+                         />
+                    </div>
+               </template>
           </BaseBlock>
      </div>
      <!-- END Page Content -->

@@ -1,127 +1,62 @@
 <script setup>
+// importing the ref and onMounted functions from vue that will be used to create reactive variables and to run functions when the component is mounted
 import { onMounted, ref } from "vue";
 
-import CategoriesService from "@/services/category.service.js";
-import TicketService from "@/services/tickets.service.js";
 
+//importing the Services that wee will use from the services folder
+import GlobalService from "@/services/global.service.js";
+import CategoriesService from "@/services/category.service.js";
+import TicketsService from "@/services/tickets.service.js";
+
+//importing the BaseHeading component from the components folder
+import  BaseHeader from "@/layouts/partials/BaseHeader.vue";// creaatting a new ref object that will hold the routes that will be passed to the BaseHeader component
+
+// Tiptap editor, for more info and examples you can check out https://github.com/ueberdosis/tiptap
+import {  EditorContent, Editor } from "@tiptap/vue-3";
+import StarterKit from "@tiptap/starter-kit";
+
+ 
+
+//creating a new ref object that will hold the new ticket data
 const newTicket = ref({
      title: "",
      content: ``,
      category_id: "",
 });
 
+
+//creating a new ref object that will hold all the categories data
 const categories = ref([]);
+
+
+//function that will get all the categories from the database
 const getCategories = async () => {
      try {
           const response = await CategoriesService.getAllCategories(); // Use getAllUsers method
           categories.value = response.data;
      } catch (error) {
-          console.error("Error fetching categories:", error);
+          GlobalService.toasterShowError(error.response.data.error);
      }
 };
-import { createToaster } from "@meforma/vue-toaster";
-import { useRouter } from "vue-router";
-const router = useRouter();
-
-const toaster = createToaster({});
-
+ 
+  
 // Watch for changes in the editor content and update the reactive variable
 function addNewTicket() {
      const html = editor.getHTML();
-     const isTheContentTheSame = html === newTicket.value.content;
-     const isTheContentEmpty = html === `<p></p>`;
-     if (
-          (isTheContentEmpty || isTheContentTheSame) &&
-          newTicket.value.category_id == "" &&
-          newTicket.value.title == ""
-     ) {
-          toaster.show(
-               `<div><i class="fa-solid fa-triangle-exclamation"></i> Please fill all fields</div>`,
-               {
-                    position: "top",
-                    duration: 5000,
-                    type: "error",
-               }
-          );
-          return;
-     } else if (
-          newTicket.value.title == "" &&
-          newTicket.value.category_id == ""
-     ) {
-          toaster.show(
-               `<div><i class="fa-solid fa-triangle-exclamation"></i> Title and Category are required</div>`,
-               {
-                    position: "top",
-                    duration: 5000,
-                    type: "error",
-               }
-          );
-          return;
-     } else if (newTicket.value.title == "") {
-          toaster.show(
-               `<div><i class="fa-solid fa-triangle-exclamation"></i> Title is required</div>`,
-               {
-                    position: "top",
-                    duration: 5000,
-                    type: "error",
-               }
-          );
-          return;
-     } else if (newTicket.value.category_id == "") {
-          toaster.show(
-               `<div><i class="fa-solid fa-triangle-exclamation"></i> Category is required</div>`,
-               {
-                    position: "top",
-                    duration: 5000,
-                    type: "error",
-               }
-          );
-          return;
-     } else if (isTheContentEmpty || isTheContentTheSame) {
-          toaster.show(
-               `<div><i class="fa-solid fa-triangle-exclamation"></i> Content is required</div>`,
-               {
-                    position: "top",
-                    duration: 5000,
-                    type: "error",
-               }
-          );
-          return;
-     } else if (html.length < 60) {
-          toaster.show(
-               `<div><i class="fa-solid fa-triangle-exclamation"></i> Content must be at least 50 characters</div>`,
-               {
-                    position: "top",
-                    duration: 5000,
-                    type: "error",
-               }
-          );
+     if(TicketsService.ticketValidation(html ,newTicket.value) == false){
           return;
      }
-
      newTicket.value.content = html;
-
-     TicketService.createTicket(newTicket.value)
+     TicketsService.createTicket(newTicket.value)
           .then((response) => {
                newTicket.value = {
                     title: "",
                     content: "",
                     category_id: "",
                };
-               toaster.show(
-                    `<div><i class="fa-solid fa-triangle-exclamation"></i> Ticket saved Successfuly</div>`,
-                    {
-                         position: "top",
-                         duration: 5000,
-                         type: "success",
-                    }
-               );
-
-               router.push({
-                    name: "ticketflowplus-ticket-oneticketpage",
-                    query: { ticket_id: response.data.id },
-               });
-          })
+               GlobalService.toasterShowSuccess( 'Ticket saved Successfuly  !')
+               GlobalService.routerPush( 'ticketflowplus-ticket-oneticketpage' ,null,{ ticket_id: response.data.id })
+          })  
           .catch((error) => {
                console.log(error);
           });
@@ -131,31 +66,22 @@ onMounted(() => {
      getCategories();
 });
 
-// CKEditor 5, for more info and examples you can check out https://ckeditor.com/docs/ckeditor5/latest/builds/guides/integration/frameworks/vuejs-v3.html
-import CKEditor from "@ckeditor/ckeditor5-vue";
+ 
 
-// You can import one of the following CKEditor variation (only one at a time)
-import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-//import InlineEditor from '@ckeditor/ckeditor5-build-inline'
-//import BalloonEditor from '@ckeditor/ckeditor5-build-balloon'
-//import BalloonBlockEditor from '@ckeditor/ckeditor5-build-balloon-block'
-
-// Tiptap editor, for more info and examples you can check out https://github.com/ueberdosis/tiptap
-import { useEditor, EditorContent, Editor } from "@tiptap/vue-3";
-import StarterKit from "@tiptap/starter-kit";
-
-// CKEditor 5 variables
-let ckeditor = CKEditor.component;
-
-const editorData = ref("<p>Hello CKEditor5!</p>");
-const editorConfig = ref({});
-
+// Tiptap editor, for more info and examples you can check out
 const editor = new Editor({
      content: newTicket.value.content,
      extensions: [StarterKit],
 });
 
-// Init Tiptap editor
+
+// creaatting a new ref object that will hold the routes that will be passed to the BaseHeader component
+const routesfirst2 = ref(["new element", "Ticket"]);
+const routeslast = ref(["ticket add form"]);
+
+
+
+
 </script>
 
 <style lang="scss">
@@ -171,28 +97,17 @@ const editor = new Editor({
 }
 </style>
 
+
 <template>
-     <!-- Hero -->
-     <BasePageHeading
-          title="add New ticket"
-          subtitle="Pleas fill the form belong then send."
-     >
-          <template #extra>
-               <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb breadcrumb-alt">
-                         <li class="breadcrumb-item">
-                              <a class="link-fx" href="javascript:void(0)"
-                                   >Forms</a
-                              >
-                         </li>
-                         <li class="breadcrumb-item" aria-current="page">
-                              Editors
-                         </li>
-                    </ol>
-               </nav>
-          </template>
-     </BasePageHeading>
+      <!-- Hero -->
+     <BaseHeader
+          title="Add New Category"
+          subtitle="Pleas fill the form belong then save."
+          :routesfirst2="routesfirst2"
+          :routeslast="routeslast"
+     />     
      <!-- END Hero -->
+  
 
      <!-- Page Content -->
      <div class="content">

@@ -1,43 +1,17 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
-import { useRouter } from "vue-router";
+import { ref  } from "vue";
 import { useTemplateStore } from "@/stores/template";
+import UsersService from "@/services/users.service.js";
+
 
 // Grab example data
 import notifications from "@/data/notifications";
 
-// Main store and Router
+
 const store = useTemplateStore();
-const router = useRouter();
+ 
+const user = UsersService.getCurrentUser();
 
-// Reactive variables
-const baseSearchTerm = ref("");
-
-// On form search submit functionality
-function onSubmitSearch() {
-  router.push("/backend/pages/generic/search?" + baseSearchTerm.value);
-}
-
-// When ESCAPE key is hit close the header search section
-function eventHeaderSearch(event) {
-  if (event.which === 27) {
-    event.preventDefault();
-    store.headerSearch({ mode: "off" });
-  }
-}
-
-// Attach ESCAPE key event listener
-onMounted(() => {
-  document.addEventListener("keydown", eventHeaderSearch);
-});
-
-// Remove keydown event listener
-onUnmounted(() => {
-  document.removeEventListener("keydown", eventHeaderSearch);
-});
-
-import UsersService from "@/services/users.service.js";
-const user = JSON.parse(localStorage.getItem("user"));
 </script>
 
 <template>
@@ -53,7 +27,8 @@ const user = JSON.parse(localStorage.getItem("user"));
               <!-- Toggle Sidebar -->
               <button
                 type="button"
-                class="btn btn-sm btn-alt-secondary me-2 d-lg-none"
+                class="btn btn-sm btn-alt-secondary me-2 d-lg-none smini-hide fs-5 tracking-wider text-center"
+       
                 @click="store.sidebar({ mode: 'toggle' })"
               >
                 <i class="fa fa-fw fa-bars"></i>
@@ -63,42 +38,17 @@ const user = JSON.parse(localStorage.getItem("user"));
               <!-- Toggle Mini Sidebar -->
               <button
                 type="button"
-                class="btn btn-sm btn-alt-secondary me-2 d-none d-lg-inline-block"
+                style="margin-left: -60px;"
+                class="btn btn-sm btn-primary me-2 d-none d-lg-inline-block"
                 @click="store.sidebarMini({ mode: 'toggle' })"
               >
-                <i class="fa fa-fw fa-ellipsis-v"></i>
+               <i class="fa-solid fa-xmark"></i>
               </button>
+               
               <!-- END Toggle Mini Sidebar -->
 
-              <!-- Open Search Section (visible on smaller screens) -->
-              <button
-                type="button"
-                class="btn btn-sm btn-alt-secondary d-md-none"
-                @click="store.headerSearch({ mode: 'on' })"
-              >
-                <i class="fa fa-fw fa-search"></i>
-              </button>
-              <!-- END Open Search Section -->
-
-              <!-- Search Form (visible on larger screens) -->
-              <form
-                class="d-none d-md-inline-block"
-                @submit.prevent="onSubmitSearch"
-              >
-                <div class="input-group input-group-sm">
-                  <input
-                    type="text"
-                    class="form-control form-control-alt"
-                    placeholder="Search.."
-                    id="page-header-search-input2"
-                    name="page-header-search-input2"
-                    v-model="baseSearchTerm"
-                  />
-                  <span class="input-group-text border-0">
-                    <i class="fa fa-fw fa-search"></i>
-                  </span>
-                </div>
-              </form>
+            
+             
               <!-- END Search Form -->
             </slot>
           </div>
@@ -236,27 +186,7 @@ const user = JSON.parse(localStorage.getItem("user"));
         class="overlay-header bg-body-extra-light"
         :class="{ show: store.settings.headerSearch }"
       >
-        <div class="content-header">
-          <form class="w-100" @submit.prevent="onSubmitSearch">
-            <div class="input-group">
-              <button
-                type="button"
-                class="btn btn-alt-danger"
-                @click="store.headerSearch({ mode: 'off' })"
-              >
-                <i class="fa fa-fw fa-times-circle"></i>
-              </button>
-              <input
-                type="text"
-                class="form-control"
-                placeholder="Search or hit ESC.."
-                id="page-header-search-input"
-                name="page-header-search-input"
-                v-model="baseSearchTerm"
-              />
-            </div>
-          </form>
-        </div>
+         
       </div>
       <!-- END Header Search -->
 

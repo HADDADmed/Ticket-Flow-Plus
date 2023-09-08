@@ -1,5 +1,5 @@
 <script setup>
-import GlobalService from "@/services/global.servise.js";
+import GlobalService from "@/services/global.service.js";
 import { ref, onMounted } from "vue";
 import { useRoute } from "vue-router";
 import TicketService from "@/services/tickets.service.js";
@@ -10,37 +10,29 @@ import CategoriesService from "@/services/category.service.js";
 import { createToaster } from "@meforma/vue-toaster";
 
 const toaster = createToaster({});
-const route = useRoute();
+
 var currentDate = ref(GlobalService.getCurrentDate());
 var currentTime = ref(GlobalService.getCurrentTimeWithoutSeconds());
 
+
+const route = useRoute();
 const ticket_id = route.query.ticket_id; // 'ticket_id'
 const newTicketStatus = ref({
      ticket_id: ticket_id,
      status_id: "",
 });
 
+
 const ticket = ref([{}]);
 const ticketStatuses = ref([]);
 var currentStatus = ref("");
 
-const getTicketStatuses = async () => {
-     try {
-      const response = await TicketStatusService.getAllTicketStatusesByTicketId(ticket_id);         
-      ticketStatuses.value = response.data;
-      currentStatus = ticketStatuses.value[0].status_name;
-     } catch (error) {
-          console.error("Error fetching tickets:", error);
-     }
-};
-const getTicket = async () => {
-     try {
-          const response = await TicketService.getTicketById(ticket_id);
-          ticket.value = response.data;
-     } catch (error) {
-          console.error("Error fetching tickets:", error);
-     }
-};
+
+const newComment = ref({
+     ticket_id: ticket_id,
+     commentContent: "",
+});
+
 
 const statuses = ref([
      {
@@ -56,10 +48,26 @@ const statuses = ref([
           name: "CLOSED",
      },
 ]);
-onMounted(async () => {
-     await getTicket();
-     await getTicketStatuses();
-});
+
+const getTicketStatuses = async () => {
+     try {
+      const response = await TicketStatusService.getAllTicketStatusesByTicketId(ticket_id);         
+      ticketStatuses.value = response.data;
+      currentStatus = ticketStatuses.value[0].status_name;
+     } catch (error) {
+          console.error("Error fetching tickets:", error);
+     }
+};
+
+const getTicket = async () => {
+     try {
+          const response = await TicketService.getTicketById(ticket_id);
+          ticket.value = response.data;
+     } catch (error) {
+          console.error("Error fetching tickets:", error);
+     }
+};
+
 function updateTicketStatus() {
      newTicketStatus.value.ticket_id = ticket_id;
      TicketStatusService.createTicketStatus(newTicketStatus.value)
@@ -69,35 +77,19 @@ function updateTicketStatus() {
                     status_id: "",
                };
                getTicketStatuses()
-               toaster.show(
-                    `<div><i class="fa-solid fa-circle-check"></i> Status updated successfuly !</div>`,
-                    {
-                         position: "top",
-                         duration: 5000,
-                         type: "success",
-                    }
-               );
+               GlobalService.toasterShowSuccess(`Status updated successfuly !`);
+               
           })
           .catch((error) => {
                console.log(error);
           });
-     console.log("updateTicketStatus");
-}
-const newComment = ref({
-     ticket_id: ticket_id,
-     commentContent: "",
-});
+ }
 
+ 
 function addComment() {
      if (newComment.value.commentContent == "") {
-          toaster.show(
-               `<div><i class="fa-solid fa-circle-exclamation"></i> Please add a comment !</div>`,
-               {
-                    position: "top",
-                    duration: 5000,
-                    type: "warning",
-               }
-          );
+          GlobalService.toasterShowWarning(`Please add a comment !`);
+           
      } else {
           newComment.value.ticket_id = ticket_id;
           CommentService.createComment(newComment.value)
@@ -107,14 +99,7 @@ function addComment() {
                          commentContent: "",
                     };
                     getTicket();
-                    toaster.show(
-                         `<div><i class="fa-solid fa-circle-check"></i> Comment added successfuly !</div>`,
-                         {
-                              position: "top",
-                              duration: 5000,
-                              type: "success",
-                         }
-                    );
+                    GlobalService.toasterShowSuccess(`Comment added successfuly !`);
                })
                .catch((error) => {
                     console.log(error);
@@ -122,9 +107,14 @@ function addComment() {
      }
 }
 
-import { useTemplateStore } from "@/stores/template";
-const store = useTemplateStore();
 
+onMounted(async () => {
+     await getTicket();
+     await getTicketStatuses();
+});
+
+
+ 
 setInterval(() => {
      currentDate.value = GlobalService.getCurrentDate();
      currentTime.value = GlobalService.getCurrentTimeWithoutSeconds();

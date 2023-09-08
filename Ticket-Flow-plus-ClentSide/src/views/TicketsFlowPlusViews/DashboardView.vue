@@ -1,11 +1,15 @@
 <script setup>
-import { reactive, ref } from "vue";
+import { ref ,onMounted} from "vue";
 
 // vue-chartjs, for more info and examples you can check out https://vue-chartjs.org/ and http://www.chartjs.org/docs/ -->
-import { Line, Bar, Radar, PolarArea, Pie, Doughnut } from "vue-chartjs";
+import { Pie } from "vue-chartjs";
 import { Chart, registerables } from "chart.js";
-import { useRouter } from "vue-router";
-const route = useRouter();
+
+// fetching statistics from the backend
+import DashboardService   from "../../services/dashboard.service";
+import GlobalService from "../../services/global.service";
+
+
 Chart.register(...registerables);
 
 // Set Global Chart.js configuration
@@ -24,9 +28,7 @@ Chart.defaults.plugins.legend.labels.boxWidth = 10;
 // start the Ticket Flow Plus code
  const user = JSON.parse(localStorage.getItem("user"))
  const whoseAuthenticated = user.role;
-// fetching statistics from the backend
-import DashboardService    from "../../services/dashboard.service";
-import { onMounted } from "vue";
+
 
 var statistics = ref({});
 var chartPolarPieDonutData = ref({labels: ["", "", ""],datasets: [{data: ['', '', ''],backgroundColor: [ "", "", "",],hoverBackgroundColor: ["","", "", ],},],});
@@ -116,7 +118,7 @@ onMounted(() => {
                                           </div>
             </div>
             <div class="bg-body-light rounded-bottom">
-              <a @click="route.push({name:'ticketflowplus-tickets-list',query:{ filter_terme: 'OPEN'}})"
+              <a @click="GlobalService.routerPush('ticketflowplus-tickets-list',null,{ filter_terme: 'OPEN'})"
 
                 class="block-content block-content-full block-content-sm fs-sm fw-medium d-flex align-items-center justify-content-between"
                 href="javascript:void(0)"
@@ -149,7 +151,7 @@ onMounted(() => {
                             </div>
             </div>
             <div class="bg-body-light rounded-bottom">
-              <a @click="route.push({name:'ticketflowplus-tickets-list',query:{ filter_terme: 'PENDING'}})"
+              <a @click="GlobalService.routerPush('ticketflowplus-tickets-list',null,{ filter_terme: 'PENDING'})"
                 class="block-content block-content-full block-content-sm fs-sm fw-medium d-flex align-items-center justify-content-between"
                 href="javascript:void(0)"
               >
@@ -180,7 +182,7 @@ onMounted(() => {
                 <i class="fas fa-lock" style="color: #135bd8;"></i> </div>
             </div>
             <div class="bg-body-light rounded-bottom">
-              <a @click="route.push({name:'ticketflowplus-tickets-list',query:{ filter_terme: 'CLOSED'}})"
+              <a @click="GlobalService.routerPush('ticketflowplus-tickets-list',null,{ filter_terme: 'CLOSED'})"
                 class="block-content block-content-full block-content-sm fs-sm fw-medium d-flex align-items-center justify-content-between"
                 href="javascript:void(0)"
               >
@@ -212,7 +214,7 @@ onMounted(() => {
               </div>
             </div>
             <div class="bg-body-light rounded-bottom">
-              <a @click="route.push({name:'ticketflowplus-tickets-list',query:{ filter_terme: ''}})"
+              <a @click="GlobalService.routerPush('ticketflowplus-tickets-list',null,{ filter_terme: ''})"
                 class="block-content block-content-full block-content-sm fs-sm fw-medium d-flex align-items-center justify-content-between"
                 href="javascript:void(0)"
               >
@@ -271,7 +273,7 @@ onMounted(() => {
                                           </div>
             </div>
             <div class="bg-body-light rounded-bottom">
-              <a @click="route.push({name:'ticketflowplus-categories-list'})"
+              <a @click="GlobalService.routerPush('ticketflowplus-categories-list')"
                 class="block-content block-content-full block-content-sm fs-sm fw-medium d-flex align-items-center justify-content-between"
                 href="javascript:void(0)"
               >
@@ -301,7 +303,7 @@ onMounted(() => {
                                           </div>
             </div>
             <div class="bg-body-light rounded-bottom">
-              <a @click="route.push({name:'ticketflowplus-users-list',query:{ filter_terme: 'USER'}})"
+              <a @click="GlobalService.routerPush('ticketflowplus-users-list',null,{ filter_terme: 'USER'})"
                 class="block-content block-content-full block-content-sm fs-sm fw-medium d-flex align-items-center justify-content-between"
                 href="javascript:void(0)"
               >
@@ -331,7 +333,7 @@ onMounted(() => {
                                           </div>
             </div>
             <div class="bg-body-light rounded-bottom">
-              <a @click="route.push({name:'ticketflowplus-users-list',query:{ filter_terme: 'RESPONSIBLE'}})"
+              <a @click="GlobalService.routerPush('ticketflowplus-users-list',null,{ filter_terme: 'RESPONSIBLE'})"
                class="block-content block-content-full block-content-sm fs-sm fw-medium d-flex align-items-center justify-content-between"
                 href="javascript:void(0)"
               >

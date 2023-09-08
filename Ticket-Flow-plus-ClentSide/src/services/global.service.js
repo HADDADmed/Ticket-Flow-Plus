@@ -1,11 +1,19 @@
-// creat a file named global.servise.js in services folder that conteain all global functions
+// creat a file named global.service.js in services folder that conteain all global functions
 
+import { createToaster } from "@meforma/vue-toaster";
+import { createRouter, createWebHistory } from 'vue-router';
 
-
-
+import router from '@/router'; // Import your Vue Router instance
 
 class GlobalService {
 
+    constructor() {
+        this.toaster = createToaster({})
+      }
+      
+    getCurrentUser() {
+        return JSON.parse(localStorage.getItem('user'));
+    }
     //create a global variable isAdmin to check if the user is admin or not
     isAdmin() {
         const user = JSON.parse(localStorage.getItem('user'));
@@ -175,7 +183,77 @@ class GlobalService {
         return [hour, minute].join(':');
     }
 
+    passwordMatch(password, confirmPassword) {
+        if (password === confirmPassword) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    
+    toasterShow(message, type,icon ,duration=5000, position="top", ) {
+        this.toaster.show(`<div><i class="${icon}"></i>&nbsp;&nbsp;&nbsp${message} </div>`, {
+            position: position,
+            duration: duration,
+            type: type,
+
+          });
+    }
+
+    toasterShowError(message,duration=6000, position="top") {
+        this.toasterShow(message, "error",'fa-solid fa-triangle-exclamation',duration,position);
+    }
+    
+    toasterShowSuccess(message,duration=6000, position="top") {
+        this.toasterShow(message, "success",'fa-regular fa-circle-check',duration,position);
+    }
+    
+    toasterShowWarning(message,duration=6000, position="top") {
+        this.toasterShow(message, "warning",'fa-regular fa-circle-xmark',duration,position); 
+    }
+
+    passwordValidation(password, confirmPassword) {
+        if(!(this.passwordMatch(password, confirmPassword))) {
+            this.toasterShowWarning(`Passwords don't match  !`);
+              return false;
+        } else
+        if(password.length < 8) { 
+                this.toasterShowWarning(`Password must be at least 8 characters  !`);
+                    return false;
+            
+            } else if(password.search(/[a-z]/) < 0) { 
+                this.toasterShowWarning(`Password must contain at least one lowercase letter  !`);
+                    return false;
+
+            } else if(password.search(/[A-Z]/) < 0) { 
+                this.toasterShowWarning(`Password must contain at least one uppercase letter  !`);
+                    return false;
+
+            } else if(password.search(/[0-9]/) < 0) { 
+                this.toasterShowWarning(`Password must contain at least one number  !`);
+                    return false;
+
+            } else { 
+                    return true;
+            } 
 }
+           
+            // cretae a function that push to the component that name is passed as parameter and also if the parameter contans params and query
+            // push the params and query to the component
+            routerPush(componentName, params=null, query=null) {
+                if(params && query) {
+                    router.push({name: componentName, params: params, query: query});
+                } else if(params) {
+                    router.push({name: componentName, params: params});
+                } else if(query) {
+                    router.push({name: componentName, query: query});
+                } else {
+                    router.push({name: componentName});
+                }
+            }
+
+ }
 
 
 export default new GlobalService();

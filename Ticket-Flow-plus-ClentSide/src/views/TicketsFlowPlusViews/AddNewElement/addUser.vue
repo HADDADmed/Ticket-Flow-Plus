@@ -1,26 +1,14 @@
 <script setup>
+
+//importing the ref function from vue
 import { ref } from "vue";
-import { createToaster } from "@meforma/vue-toaster";
-import { useRouter } from "vue-router";
+
+// importing services that we will use from the services folder
 import UsersService from "@/services/users.service.js";
-const router = useRouter();
-const toaster = createToaster({});
-const UsersRoles =[
-    
-    {
-        role: 'USER',
-        class: 'User'
-    },
-    {
-        role: 'RESPONSIBLE',
-        class: 'Admin'
-    } ,
-    {
-        role: 'ADMIN',
-        class: 'Admin'
-    }
-   
-]
+import GlobalService from "@/services/global.service.js";
+
+
+// creating a new ref object that will hold the new user data
 const newUser = ref({
      fullName: "",
      email: "",
@@ -31,43 +19,41 @@ const newUser = ref({
      hiringDate: "",
      passwordConfirmation: "",
 });
-function createUser() {
-     if (newUser.value.password != newUser.value.passwordConfirmation) {
-          newUser.value.password = "";
-          newUser.value.passwordConfirmation = "";
-          toaster.show(
-               `<div><i class="fa-solid fa-circle-exclamation"></i> Passwords are not the same !</div> <div style="display:flex; justify-content:center;">Please Try again</div>`,
-               {
-                    position: "bottom-right",
-                    duration: 5000,
-                    type: "warning",
-               }
-          );
-          return;
-     } else {
-              UsersService.createUser(newUser.value)
-               .then(function (response) {
-                    console.log(response);
-                    toaster.show(
-                         `<div><i class="fa-solid fa-circle-check"></i> User Created successfuly !</div>`,
-                         {
-                              position: "bottom-right",
-                              duration: 5000,
-                              type: "success",
-                         }
-                    );
 
-                    router.push({mame: 'ticketflowplus-users-list'}); // Assuming you have a route named 'categorylist'
+
+// Uers Roles array that will be used in the select input
+const Roles = [
+     {
+          role: "USER",
+          class: "User",
+     },
+     {
+          role: "RESPONSIBLE",
+          class: "Admin",
+     },
+     {
+          role: "ADMIN",
+          class: "Admin",
+     },
+];
+
+// function that will create the new user
+function createUser() {
+     if (
+          GlobalService.passwordValidation(
+               newUser.value.password,
+               newUser.value.passwordConfirmation
+          )
+     ) {
+          UsersService.createUser(newUser.value)
+               .then(function (response) {
+                     GlobalService.toasterShowSuccess(
+                         "User Created successfuly !"
+                    );
+                    GlobalService.routerPush("ticketflowplus-users-list"); // Assuming you have a route named 'categorylist'
                })
                .catch(function (error) {
-                    toaster.show(
-                         `<div><i class="fa-solid fa-circle-check"></i> ${error.response.data.error} !</div>`,
-                         {
-                              position: "top",
-                              duration: 5000,
-                              type: "error",
-                         }
-                    );
+                    GlobalService.toasterShowError(error.response.data.error);
                });
      }
 }
@@ -102,8 +88,8 @@ function createUser() {
           <BaseBlock title="add New User    " content-full>
                <div class="row">
                     <div class="col-lg-12 mx-auto pb-4">
-                         <div class="card mt-2 mx-auto p-4  ">
-                              <div class="card-body ">
+                         <div class="card mt-2 mx-auto p-4">
+                              <div class="card-body">
                                    <div class="container">
                                         <form
                                              @submit.prevent="createUser()"
@@ -114,7 +100,7 @@ function createUser() {
                                                   <div class="row">
                                                        <div class="col-md-6">
                                                             <div
-                                                                 class="form-group"
+                                                                 class="form-group animated bounceInRight"
                                                             >
                                                                  <label
                                                                       for="form_fullName"
@@ -127,7 +113,7 @@ function createUser() {
                                                                       v-model="
                                                                            newUser.fullName
                                                                       "
-                                                                      class=" form-control form-control-alt" 
+                                                                      class="form-control form-control-alt"
                                                                       placeholder="enter the User full Name *"
                                                                       required="required"
                                                                       data-error="Firstname is required."
@@ -136,7 +122,7 @@ function createUser() {
                                                        </div>
                                                        <div class="col-md-6">
                                                             <div
-                                                                 class="form-group"
+                                                                 class="form-group animated bounceInLeft"
                                                             >
                                                                  <label
                                                                       for="form_phoneNumber"
@@ -151,7 +137,8 @@ function createUser() {
                                                                            newUser.phoneNumber
                                                                       "
                                                                       name="surname"
-                                                                      class=" form-control form-control-alt"                                                                      placeholder="enter the User phone number *"
+                                                                      class="form-control form-control-alt"
+                                                                      placeholder="enter the User phone number *"
                                                                       required="required"
                                                                       data-error="Lastname is required."
                                                                  />
@@ -161,7 +148,7 @@ function createUser() {
                                                   <div class="row">
                                                        <div class="col-md-6">
                                                             <div
-                                                                 class="form-group"
+                                                                 class="form-group animated bounceInLeft"
                                                             >
                                                                  <label
                                                                       for="form_email"
@@ -175,7 +162,8 @@ function createUser() {
                                                                       v-model="
                                                                            newUser.email
                                                                       "
-                                                                      class=" form-control form-control-alt"                                                                      placeholder="Please enter your email *"
+                                                                      class="form-control form-control-alt"
+                                                                      placeholder="Please enter your email *"
                                                                       required="required"
                                                                       data-error="Valid email is required."
                                                                  />
@@ -183,7 +171,7 @@ function createUser() {
                                                        </div>
                                                        <div class="col-md-6">
                                                             <div
-                                                                 class="form-group"
+                                                                 class="form-group animated bounceInRight"
                                                             >
                                                                  <label
                                                                       style="
@@ -201,7 +189,8 @@ function createUser() {
                                                                       "
                                                                       id="form_role"
                                                                       name="role"
-                                                                      class=" form-control form-control-alt"                                                                      required="required"
+                                                                      class="form-control form-control-alt"
+                                                                      required="required"
                                                                       data-error="Please specify the role."
                                                                  >
                                                                       <option
@@ -213,7 +202,7 @@ function createUser() {
                                                                            Role--
                                                                       </option>
                                                                       <option
-                                                                           v-for="UserRole in UsersRoles"
+                                                                           v-for="UserRole in Roles"
                                                                            :class="
                                                                                 UserRole.class
                                                                            "
@@ -227,7 +216,7 @@ function createUser() {
                                                        </div>
                                                   </div>
                                                   <div class="row">
-                                                       <div class="col-md-6">
+                                                       <div class="col-md-6 animated bounceInRight">
                                                             <div
                                                                  class="form-group"
                                                             >
@@ -244,14 +233,15 @@ function createUser() {
                                                                       "
                                                                       type="date"
                                                                       name="hiringDate"
-                                                                      class=" form-control form-control-alt"                                                                      required="required"
+                                                                      class="form-control form-control-alt"
+                                                                      required="required"
                                                                       data-error="Hiring date is required."
                                                                  />
                                                             </div>
                                                        </div>
                                                        <div class="col-md-6">
                                                             <div
-                                                                 class="form-group"
+                                                                 class="form-group animated bounceInLeft"
                                                             >
                                                                  <label
                                                                       for="form_birthDate"
@@ -265,7 +255,8 @@ function createUser() {
                                                                       "
                                                                       type="date"
                                                                       name="birthDate"
-                                                                      class=" form-control form-control-alt"                                                                 />
+                                                                      class="form-control form-control-alt"
+                                                                 />
                                                             </div>
                                                        </div>
                                                   </div>
@@ -275,7 +266,7 @@ function createUser() {
                                                   >
                                                        <div class="col-md-6">
                                                             <div
-                                                                 class="form-group"
+                                                                 class="form-group animated bounceInLeft"
                                                             >
                                                                  <label
                                                                       for="form_password"
@@ -290,7 +281,8 @@ function createUser() {
                                                                       "
                                                                       type="password"
                                                                       name="empasswordail"
-                                                                      class=" form-control form-control-alt"                                                                      placeholder="enter the User Access Pasword *"
+                                                                      class="form-control form-control-alt"
+                                                                      placeholder="enter the User Access Pasword *"
                                                                       required="required"
                                                                       data-error="Pleas enter the Pasword."
                                                                  />
@@ -298,7 +290,7 @@ function createUser() {
                                                        </div>
                                                        <div class="col-md-6">
                                                             <div
-                                                                 class="form-group"
+                                                                 class="form-group animated bounceInRight"
                                                             >
                                                                  <label
                                                                       for="form_passwordConfirmation"
@@ -313,7 +305,8 @@ function createUser() {
                                                                            newUser.passwordConfirmation
                                                                       "
                                                                       name="passwordConfirmation"
-                                                                      class=" form-control form-control-alt"                                                                      placeholder="comfirm the Access Pasword *"
+                                                                      class="form-control form-control-alt"
+                                                                      placeholder="comfirm the Access Pasword *"
                                                                       required="required"
                                                                       data-error="Pleas enter the Pasword comfirmation."
                                                                  />
@@ -322,7 +315,7 @@ function createUser() {
                                                   </div>
 
                                                   <div
-                                                       class="col-md-12 d-flex justify-conetent-center"
+                                                       class="col-md-12 d-flex justify-conetent-center animated bounceInUp"
                                                        style="
                                                             margin-top: 30px;
                                                             margin-left: 50px;
@@ -330,7 +323,7 @@ function createUser() {
                                                   >
                                                        <input
                                                             type="submit"
-                                                             class="btn btn-send pt-2 btn-block submitButton"
+                                                            class="btn btn-send pt-2 btn-block submitButton"
                                                             value="Create The User"
                                                        />
                                                   </div>
@@ -351,50 +344,47 @@ function createUser() {
 </template>
 
 <style scoped>
-
-.User{
-    color: green;
+.User {
+     color: green;
 }
-.Admin{
-    color: red;
-    font-size: large;
+.Admin {
+     color: red;
+     font-size: large;
 }
 body {
-    font-family: 'Lato', sans-serif;
+     font-family: "Lato", sans-serif;
 }
 
 h1 {
-    margin-bottom: 40px;
+     margin-bottom: 40px;
 }
 
 label {
-    color: #333;
+     color: #333;
 }
 
 .btn-send {
-    font-weight: 300;
-    text-transform: uppercase;
-    letter-spacing: 0.2em;
-    width: 80%;
-    margin-left: 3px;
-    }
+     font-weight: 300;
+     text-transform: uppercase;
+     letter-spacing: 0.2em;
+     width: 80%;
+     margin-left: 3px;
+}
 .help-block.with-errors {
-    color: #ff5050;
-    margin-top: 5px;
-
+     color: #ff5050;
+     margin-top: 5px;
 }
 
-.card{
-	margin-left: 10px;
-	margin-right: 10px;
+.card {
+     margin-left: 10px;
+     margin-right: 10px;
 }
 .submitButton {
-    background: #003366;
-    font-size: 30px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    line-height: 1em;
-    color: white;
+     background: #003366;
+     font-size: 30px;
+     font-weight: 700;
+     letter-spacing: 3px;
+     line-height: 1em;
+     color: white;
 }
-
 </style>

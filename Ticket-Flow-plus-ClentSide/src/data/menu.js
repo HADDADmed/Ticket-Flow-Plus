@@ -1,4 +1,3 @@
-
 const user = JSON.parse(localStorage.getItem("user"));
 
 const role = user.role;
