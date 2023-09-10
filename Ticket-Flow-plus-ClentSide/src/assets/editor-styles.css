@@ -33,6 +33,7 @@
 /* status */
 
 .status {
+     font-size: 14px;
      font-weight: bold;
      margin-top: 0px;
      display: inline-block;

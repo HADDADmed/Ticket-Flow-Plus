@@ -78,7 +78,7 @@ onMounted(() => {
   <div class="content animated bounceInRight">
     <div
       class="d-flex flex-column flex-md-row justify-content-md-between align-items-md-center py-2 text-center text-md-start"
-  
+
     >
       <div class="flex-grow-1 mb-1 mb-md-0">
         <h1 class="h3 fw-bold mb-2">Dashboard</h1>
@@ -91,7 +91,7 @@ onMounted(() => {
           >, to your Ticket Flow Plus Dashboard
         </h2>
       </div>
-      
+
     </div>
   </div>
   <!-- END Hero -->
@@ -143,9 +143,9 @@ onMounted(() => {
               <dl class="mb-0">
                 <dt class="fs-3 fw-bold">{{statistics.pending_status_tickets_count}}</dt>
                 <dd class="fs-sm fw-medium fs-sm fw-medium text-muted mb-0">
-                  <span class="pendingStatus"> Pending</span> Tickets  
+                  <span class="pendingStatus"> Pending</span> Tickets
                 </dd>
-              </dl> 
+              </dl>
               <div class="item item-rounded-lg bg-body-light">
                 <i class="fas fa-truck-loading " style="color: #135bd8; "></i>
                             </div>
@@ -206,7 +206,7 @@ onMounted(() => {
               <dl class="mb-0">
                 <dt class="fs-3 fw-bold">{{statistics.total_count}}</dt>
                 <dd class="fs-sm fw-medium fs-sm fw-medium text-muted mb-0">
-                  total of Tickets  
+                  total of Tickets
                 </dd>
               </dl>
               <div class="item item-rounded-lg bg-body-light">
@@ -233,7 +233,7 @@ onMounted(() => {
 
     <!-- Statistics -->
     <div class="row animated  ">
-      
+
         <div :class="whoseAuthenticated=='USER'?'d-flex justify-content-center align-item-center':'col-xl-8 col-xxl-9 d-flex flex-column'">
         <!-- Earnings Summary -->
         <BaseBlock
@@ -256,7 +256,7 @@ onMounted(() => {
         <!-- Last 2 Weeks -->
         <div class="row items-push flex-grow-1">
           <div class="col-md-6 col-xl-12 animated bounceInLeft">
-            
+
             <BaseBlock class="d-flex flex-column h-100 mb-0">
           <template #content>
             <div
@@ -265,7 +265,7 @@ onMounted(() => {
               <dl class="mb-0">
                 <dt class="fs-3 fw-bold">{{statistics.categories_count}}</dt>
                 <dd class="fs-sm fw-medium fs-sm fw-medium text-muted mb-0">
-                Total of Categoeies
+                Total of Categories
                 </dd>
               </dl>
               <div class="item item-rounded-lg bg-body-light">
@@ -277,7 +277,7 @@ onMounted(() => {
                 class="block-content block-content-full block-content-sm fs-sm fw-medium d-flex align-items-center justify-content-between"
                 href="javascript:void(0)"
               >
-                <span>View All  Categoeies</span>
+                <span>View All  Categories</span>
                 <i
                   class="fa fa-arrow-alt-circle-right ms-1 opacity-25 fs-base"
                 ></i>
@@ -295,7 +295,7 @@ onMounted(() => {
               <dl class="mb-0">
                 <dt class="fs-3 fw-bold">{{statistics.users_count}} </dt>
                 <dd class="fs-sm fw-medium fs-sm fw-medium text-muted mb-0">
-                 Total Of Users 
+                 Total Of Users
                 </dd>
               </dl>
               <div class="item item-rounded-lg bg-body-light">

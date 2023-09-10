@@ -151,7 +151,7 @@ const earningsOptions = reactive({
           >, everything looks great.
         </h2>
       </div>
-      
+
     </div>
   </div>
   <!-- END Hero -->
@@ -265,7 +265,7 @@ const earningsOptions = reactive({
               <dl class="mb-0">
                 <dt class="fs-3 fw-bold">50</dt>
                 <dd class="fs-sm fw-medium fs-sm fw-medium text-muted mb-0">
-                  Tickets Count 
+                  Tickets Count
                 </dd>
               </dl>
               <div class="item item-rounded-lg bg-body-light">
@@ -292,7 +292,7 @@ const earningsOptions = reactive({
 
     <!-- Statistics -->
     <div class="row">
-      
+
         <div :class="whoseAuthenticated=='USER'?'d-flex justify-content-center align-item-center':'col-xl-8 col-xxl-9 d-flex flex-column'">
         <!-- Earnings Summary -->
         <BaseBlock
@@ -322,7 +322,7 @@ const earningsOptions = reactive({
         <!-- Last 2 Weeks -->
         <div class="row items-push flex-grow-1">
           <div class="col-md-6 col-xl-12">
-            
+
             <BaseBlock class="d-flex flex-column h-100 mb-0">
           <template #content>
             <div
@@ -331,7 +331,7 @@ const earningsOptions = reactive({
               <dl class="mb-0">
                 <dt class="fs-3 fw-bold">10</dt>
                 <dd class="fs-sm fw-medium fs-sm fw-medium text-muted mb-0">
-                Count of Categoeies
+                Count of Cetegories
                 </dd>
               </dl>
               <div class="item item-rounded-lg bg-body-light">
@@ -343,7 +343,7 @@ const earningsOptions = reactive({
                 class="block-content block-content-full block-content-sm fs-sm fw-medium d-flex align-items-center justify-content-between"
                 href="javascript:void(0)"
               >
-                <span>View All Open Categoeies</span>
+                <span>View All Open Cetegories</span>
                 <i
                   class="fa fa-arrow-alt-circle-right ms-1 opacity-25 fs-base"
                 ></i>
@@ -361,7 +361,7 @@ const earningsOptions = reactive({
               <dl class="mb-0">
                 <dt class="fs-3 fw-bold">50</dt>
                 <dd class="fs-sm fw-medium fs-sm fw-medium text-muted mb-0">
-                 Count Of Users 
+                 Count Of Users
                 </dd>
               </dl>
               <div class="item item-rounded-lg bg-body-light">

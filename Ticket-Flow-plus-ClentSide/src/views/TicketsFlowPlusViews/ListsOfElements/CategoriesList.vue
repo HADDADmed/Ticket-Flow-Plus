@@ -1,7 +1,7 @@
 <script setup>
 //importing the ref function from vue and the onMounted function that will be used to call the getCategories function when the component is mounted
 import { onMounted  , ref } from "vue";
- 
+
 
 // import Services that we will use
 import GlobalService from "@/services/global.service.js";
@@ -14,7 +14,7 @@ const orderSearch = ref(false);
 //creating a new ref object that will hold the categories data that will be fetched from the database
 const categories = ref([]);
 
-  
+
 onMounted(() => {
      getCategories();
 });
@@ -28,8 +28,8 @@ const getCategories = async () => {
      }
 };
 
- 
- 
+
+
 
 
 var isLoading = ref(true);
@@ -46,7 +46,7 @@ function deleteCat(category_id) {
                     `Category deleted successfuly !`
                );
                getCategories();
-          });  
+          });
      } catch (error) {
           console.error("Error fetching categories:", error);
      }
@@ -158,7 +158,7 @@ const totalPages = ref(0);
                     </div>
                     <div class="block-content block-content-full">
                          <!-- Recent Orders Table -->
-                         <div class="table-responsive"> 
+                         <div class="table-responsive">
                               <v-table
                                    class="table table-hover table-vcenter"
                                    :data="categories"
@@ -173,7 +173,7 @@ const totalPages = ref(0);
                                              <VTh
                                                   style="cursor: pointer"
                                                   sortKey="id"
-                                                  class="d-none d-xl-table-cell text-center"
+                                                  class="d-none d-xl-table-cell"
                                                   >ID</VTh
                                              >
                                              <VTh
@@ -189,24 +189,26 @@ const totalPages = ref(0);
                                                   >Description</VTh
                                              >
                                              <VTh
+                                                  v-if="GlobalService.isAdmin()"
                                                   style="cursor: pointer"
                                                   sortKey="tickets_Count"
                                                   class=" text-center"
-                                                  >Tickets_Count</VTh
+                                                  >Tickets</VTh
                                              >
                                              <VTh
+                                                  v-if="GlobalService.isAdmin()"
                                                   style="cursor: pointer"
                                                   sortKey="createdAt"
                                                   class="d-none d-xl-table-cell text-center"
-                                                  >Created_At</VTh
+                                                  >CreatedAt</VTh
                                              >
-                                             <th
+                                             <th  v-if="GlobalService.isAdmin()"
                                                   style="cursor: pointer"
                                                   class=" text-center"
                                                   >Delete</th
                                              >
 
-                                             
+
                                         </tr>
                                         <!-- <tr>
                   <th>Category ID</th>
@@ -215,7 +217,7 @@ const totalPages = ref(0);
                   <th class="d-none d-sm-table-cell text-center">Description</th>
                   <th class="d-none d-sm-table-cell text-center">Tickets Count</th>
                   <th  class="d-none d-sm-table-cell text-center">Actions</th>
-           
+
                 </tr> -->
                                    </template>
 
@@ -227,14 +229,14 @@ const totalPages = ref(0);
                                                        class="fw-semibold"
                                                        href="javascript:void(0)"
                                                   >
-                                                       #{{ category.id }}
+                                                  &nbsp;#{{ category.id }}&nbsp;
                                                   </a>
                                              </td>
                                              <td >
                                                   <a
                                                        class="fw-semibold"
                                                        href="javascript:void(0)"
-                                                       >{{ category.name }}</a
+                                                       >&nbsp;{{ category.name }}&nbsp;</a
                                                   >
                                              </td>
                                              <td class="d-none d-sm-table-cell">
@@ -254,11 +256,11 @@ const totalPages = ref(0);
                                              >
                                                   <a href="javascript:void(0)">
                                                        <a  @click="GlobalService.routerPush('ticketflowplus-tickets-list',null,{ filter_terme: category.name})"
-                                                            class="fs-xs fw-semibold mb-0"
+                                                            class="fs-xs badge bg-primary rounded-pill fw-semibold mb-0"
                                                        >
-                                                            {{
+                                                       &nbsp;{{
                                                                  category.tickets_Count
-                                                            }}
+                                                            }}&nbsp;
                                                        </a>
                                                   </a>
                                              </td>

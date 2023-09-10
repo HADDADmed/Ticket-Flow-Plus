@@ -11,8 +11,8 @@ function guardMyroute(to, from, next) {
         localStorage.removeItem('user')
         next({ name: 'ticketflowplus-login' })
     }else{
-        next() 
-    } 
+        next()
+    }
 }
 
 function lazyLoad(Folder,view){
@@ -46,7 +46,7 @@ const routes = [
     path: "/",
     name: "landing",
     component: lazyLoad('null','DashboardView'),
-  
+
     },
     {
       path: "ticketflowplus-dashboard",
@@ -57,7 +57,7 @@ const routes = [
       path: "ticketflowplus-users-list",
       name: 'ticketflowplus-users-list',
       component: lazyLoad('ListsOfElements','UsersList')
-    }, 
+    },
     {
       path: "ticketflowplus-tickets-list",
       name: 'ticketflowplus-tickets-list',
@@ -67,7 +67,7 @@ const routes = [
       path: "ticketflowplus-categories-list",
       name: 'ticketflowplus-categories-list',
       component: lazyLoad('ListsOfElements','CategoriesList')
-  
+
     },{
       path: "ticketflowplus-ticket-add",
       name: "ticketflowplus-ticket-add",
@@ -83,15 +83,19 @@ const routes = [
     },{
       path: "ticketflowplus-ticket-oneticketpage",
       name: "ticketflowplus-ticket-oneticketpage",
-      component: lazyLoad('Ticket','oneTicketPage'),
-    }
+      component: lazyLoad('OneElement','oneTicketPage'),
+    },{
+     path: "ticketflowplus-user-oneuserpage",
+     name: "ticketflowplus-user-oneuserpage",
+     component: lazyLoad('OneElement','oneUserPage'),
+   }
 
 
     // end
 
   ],
 }
-  
+
 ];
 
 // Create Router
