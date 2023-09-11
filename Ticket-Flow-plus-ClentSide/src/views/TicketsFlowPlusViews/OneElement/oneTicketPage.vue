@@ -6,10 +6,7 @@ import TicketService from "@/services/tickets.service.js";
 import UsersService from "@/services/users.service.js";
 import CommentService from "@/services/comments.service.js";
 import TicketStatusService from "@/services/ticketStatus.service.js";
-import CategoriesService from "@/services/category.service.js";
-import { createToaster } from "@meforma/vue-toaster";
 
-const toaster = createToaster({});
 
 var currentDate = ref(GlobalService.getCurrentDate());
 var currentTime = ref(GlobalService.getCurrentTimeWithoutSeconds());
@@ -51,9 +48,9 @@ const statuses = ref([
 
 const getTicketStatuses = async () => {
      try {
-      const response = await TicketStatusService.getAllTicketStatusesByTicketId(ticket_id);         
+      const response = await TicketStatusService.getAllTicketStatusesByTicketId(ticket_id);
       ticketStatuses.value = response.data;
-      currentStatus = ticketStatuses.value[0].status_name;
+      currentStatus.value = ticketStatuses.value[0].status_name;
      } catch (error) {
           console.error("Error fetching tickets:", error);
      }
@@ -71,29 +68,29 @@ const getTicket = async () => {
 function updateTicketStatus() {
      newTicketStatus.value.ticket_id = ticket_id;
      TicketStatusService.createTicketStatus(newTicketStatus.value)
-          .then((response) => {
+          .then(() => {
                newTicketStatus.value = {
                     ticket_id: ticket_id,
                     status_id: "",
                };
                getTicketStatuses()
                GlobalService.toasterShowSuccess(`Status updated successfuly !`);
-               
+
           })
           .catch((error) => {
                console.log(error);
           });
  }
 
- 
+
 function addComment() {
      if (newComment.value.commentContent == "") {
           GlobalService.toasterShowWarning(`Please add a comment !`);
-           
+
      } else {
           newComment.value.ticket_id = ticket_id;
           CommentService.createComment(newComment.value)
-               .then((response) => {
+               .then(() => {
                     newComment.value = {
                          ticket_id: ticket_id,
                          commentContent: "",
@@ -114,7 +111,7 @@ onMounted(async () => {
 });
 
 
- 
+
 setInterval(() => {
      currentDate.value = GlobalService.getCurrentDate();
      currentTime.value = GlobalService.getCurrentTimeWithoutSeconds();
@@ -168,7 +165,7 @@ setInterval(() => {
                                         >
                                    <div
                                         style="
-                                            
+
                                              margin-left: 10px;
                                         "
                                    >
@@ -235,7 +232,7 @@ setInterval(() => {
                                    "
                               >
                                    <div
-                      
+
                                         style="margin-bottom: 13px"
                                         class="status text-center"
                                         :class="
@@ -283,7 +280,7 @@ setInterval(() => {
                                                                     newTicketStatus.status_id"
                                                             >
                                                                  <option
-                                                                 
+
                                                                       selected
                                                                       disabled
                                                                  >
@@ -387,12 +384,12 @@ setInterval(() => {
                                                   <thead class="thead-light">
                                                        <tr style="border: 10px">
                                                             <th scope="col">
-                                                                 Changed_By
+                                                                 created By
                                                             </th>
                                                             <th scope="col">
                                                                  Status
                                                             </th>
-                                                            <th scope="col">
+                                                            <th scope="col" class="text-center">
                                                                  Date
                                                             </th>
                                                        </tr>

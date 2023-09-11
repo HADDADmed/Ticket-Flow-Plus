@@ -5,9 +5,8 @@ var connection = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "",
-  database: "IssueTrackrPro"
+  database: "TicketFlowPlus"
 });
 
 
 module.exports = connection;
-    

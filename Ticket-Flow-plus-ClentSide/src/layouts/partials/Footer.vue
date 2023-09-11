@@ -1,6 +1,6 @@
 <script setup>
 import { useTemplateStore } from "@/stores/template";
-
+import GlobalService from "../../services/global.service";
 // Main store
 const store = useTemplateStore();
 </script>
@@ -13,11 +13,11 @@ const store = useTemplateStore();
         <div class="content py-3">
           <div class="row fs-sm">
             <div class="col-sm-6 order-sm-2 py-1 text-center text-sm-end">
-              
+
             </div>
             <div class="col-sm-6 order-sm-1 py-1 text-center text-sm-start">
               <slot name="content-left">
-                <a class="fw-semibold" href="https://1.envato.market/5Noyb">{{
+                <a class="fw-semibold" style="cursor: pointer;" @click="GlobalService.routerPush('ticketflowplus-dashboard')">{{
                   store.app.name + " " + store.app.version
                 }}</a>
                 &copy; {{ store.app.copyright }}

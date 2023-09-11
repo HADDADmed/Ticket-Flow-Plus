@@ -244,7 +244,7 @@ const totalPages = ref(0);
                     </div>
                     <div class="table-responsive">
                          <v-table
-                              class="table table-hover"
+                              class="table  table-hover"
                               :data="users"
                               :filters="filters"
                               sortHeaderClass="flex items-center justify-between w-full"
@@ -261,9 +261,6 @@ const totalPages = ref(0);
                                              >Full_Name</VTh
                                         >
                                         <th class="d-none d-xl-table-cell">
-                                             phone
-                                        </th>
-                                        <th class="d-none d-xl-table-cell">
                                              Email
                                         </th>
                                         <VTh
@@ -279,12 +276,7 @@ const totalPages = ref(0);
                                              sortKey="tickets_count"
                                              >Tickets</VTh
                                         >
-                                        <VTh
-                                             style="cursor: pointer"
-                                             sortKey="hiringDate"
-                                             class="d-none d-xl-table-cell"
-                                             >HiringDate</VTh
-                                        >
+
                                         <th
                                              class="d-none d-sm-table-cell text-"
                                         >
@@ -308,14 +300,6 @@ const totalPages = ref(0);
                                                   href="javascript:void(0)"
                                              >
                                                   {{ user.fullName }}
-                                             </a>
-                                        </td>
-                                        <td class="d-none d-xl-table-cell">
-                                             <a
-                                                  class="fw-semibold"
-                                                  href="javascript:void(0)"
-                                             >
-                                                  {{ user.phoneNumber }}
                                              </a>
                                         </td>
                                         <td class="d-none d-xl-table-cell">
@@ -352,21 +336,7 @@ const totalPages = ref(0);
                                                   >{{ user.tickets_count }}</a
                                              >
                                         </td>
-                                        <td
-                                             class="d-none d-xl-table-cell"
-                                             style="min-width: 150px"
-                                        >
-                                             <a
-                                                  class="fw-semibold"
-                                                  href="javascript:void(0)"
-                                             >
-                                                  {{
-                                                       GlobalService.formatDate(
-                                                            user.hiringDate
-                                                       )
-                                                  }}
-                                             </a>
-                                        </td>
+
 
                                         <td
                                              class="d-none d-sm-table-cell text-center"
