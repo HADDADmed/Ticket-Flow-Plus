@@ -8,7 +8,8 @@ import { statusRouter } from "./routers/ticketStatuses.router";
 import { dashboardRouter } from "./routers/dashboard.router";
 import { authRouter } from "./routers/auth.router";
 
-const webpush = require('web-push');
+
+
 const connection = require("./DataBaseManager/dbConnection"); // Adjust the path as needed
 const app: Application = express();
 const corsConf = require("../config/corsConf");
